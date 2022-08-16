@@ -1,0 +1,74 @@
+{% extends 'template/jhTemplateV3.html'%}
+
+{% block vue_template %}
+<jh-layout-v3  v-slot="{ isMobile }">
+
+    <v-form v-model="isFormValid" ref="form">
+        <v-row dense no-gutters>
+          <v-col cols="9">
+            <v-card class="pa-4" flat>
+              <v-row dense no-gutters>
+                <v-col cols="4">
+                  <v-menu class="cus-v-input mr-2" offset-y max-width="290">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field class="cus-v-input mr-2" :rules="requireRules" dense filled single-line v-on="on"
+                        label="Date" :value="editItem['date']"></v-text-field>
+                    </template>
+                    <v-date-picker color="success" elevation="20" v-model="editItem['date']"></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="4">
+                 
+                </v-col>
+                <v-col cols="4">
+                
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+  
+          <v-col cols="3">
+            <v-card flat class="pa-4 ml-4">
+             
+            </v-card>
+          </v-col>
+        </v-row>
+    </v-form>
+
+</jh-layout-v3>
+
+{% endblock %}
+
+{% block vue_body %}
+
+<script type="module">
+new Vue({
+  el: '#app',
+  template: '#app-template',
+  vuetify: new Vuetify(),
+  data: () => ({
+      isFormValid: true,
+      requireRules: [v => !!v || '此项为必填项'],
+      editItem: {
+        date: '',
+        dueDate: ''
+      }
+  }),
+  computed: {
+
+   
+  },
+  watch: {},
+  async created() {
+  
+  },
+  mounted() {
+  },
+  methods: {
+  
+  }
+})
+</script>
+
+
+{% endblock %}
