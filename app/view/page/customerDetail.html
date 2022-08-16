@@ -1,0 +1,149 @@
+{% extends 'template/jhTemplateV3.html'%}
+
+{% block vue_template %}
+<jh-layout-v3  v-slot="{ isMobile }">
+  <v-row>
+    <v-col cols="12" md="4" >
+      <v-card class="text-center pa-4">
+        <v-avatar
+          class="mt-4"
+          color="indigo"
+          size="81"
+        >
+          <span class="white--text text-h5">81</span>
+        </v-avatar>
+        <h3 class="mt-4">Max Smith</h3>
+        <h4 style="color: grey;">Software Enginer</h4>
+        <div class="flex mt-4">
+          <div class="pa-2" style="border: 1px dashed silver; display: inline-block; border-radius: 5px;" v-for="item in ">
+            <div class="">
+              <b>6900</b>
+              <v-icon
+                large
+                small
+                color="success"
+              >
+                mdi-arrow-up
+              </v-icon>
+            </div>
+            <span style="color: grey;">Earnings</span>
+          </div>
+          <div class="pa-2" style="border: 1px dashed silver; display: inline-block; border-radius: 5px;" v-for="item in ">
+            <div class="">
+              <b>130</b>
+              <v-icon
+                large
+                small
+                color="red"
+              >
+                mdi-arrow-down
+              </v-icon>
+            </div>
+            <span style="color: grey;">Tasks</span>
+          </div>
+          <div class="pa-2" style="border: 1px dashed silver; display: inline-block; border-radius: 5px;" v-for="item in ">
+            <div class="">
+              <b>500</b>
+              <v-icon
+                large
+                small
+                color="success"
+              >
+                mdi-arrow-up
+              </v-icon>
+            </div>
+            <span style="color: grey;">Hours</span>
+          </div>
+        </div>
+        <v-card-actions>
+          <b>Details</b> 
+          <v-btn
+            icon
+            @click="show = !show"
+          >
+            <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+          </v-btn>
+
+          <v-spacer></v-spacer>
+    
+          <v-btn
+            color="orange lighten-2"
+            text
+          >
+            Edit
+          </v-btn>
+          
+        </v-card-actions>
+    
+        <v-expand-transition>
+          <div v-show="show" style="text-align: left;">
+            <v-divider></v-divider>
+            <v-chip
+                class="ma-2"
+                label
+                color="success"
+              >
+                Premium user
+              </v-chip>
+            <v-list-item one-line>
+              <v-list-item-content>
+                <v-list-item-title style="font-size: 16px !important; font-weight: bold;">Account ID</v-list-item-title>
+                <v-list-item-subtitle>
+                  ID-45453423
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </div>
+        </v-expand-transition>
+      </v-card>
+      
+      <v-card class="mt-4">
+        <v-card-title primary-title>
+          Connected Accounts
+        </v-card-title>
+      </v-card>
+    </v-col>
+    <v-col cols="12" md="8" >
+      <v-card>
+        <v-avatar
+          color="indigo"
+          size="36"
+        >
+          <span class="white--text text-h5">36</span>
+        </v-avatar>
+      </v-card>
+    </v-col>
+  </v-row>
+</jh-layout-v3>
+
+{% endblock %}
+
+{% block vue_body %}
+
+<script type="module">
+new Vue({
+  el: '#app',
+  template: '#app-template',
+  vuetify: new Vuetify(),
+  data: () => ({
+      isFormValid: true,
+      show: false,
+  }),
+  computed: {
+
+   
+  },
+  watch: {},
+  async created() {
+  
+  },
+  mounted() {
+  },
+  methods: {
+  
+  }
+})
+</script>
+
+
+{% endblock %}
