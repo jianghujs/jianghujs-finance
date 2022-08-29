@@ -75,7 +75,7 @@
                   :headers="headers" 
                   :items="tableData" 
                   class="mt-8"
-                  disable-pagination
+                  hide-default-footer
                   disable-sort>
                   <template v-slot:item.name="{ item, index }">
                     <v-text-field class="cus-v-input" :rules="requireRules" dense filled single-line 
@@ -98,6 +98,24 @@
                   </template>
                   <template v-slot:item.action="{ item }">
                       <v-icon small role="button">mdi-trash-can-outline</v-icon>
+                  </template>
+                  <template v-slot:body.append>
+                    <tr>
+                      <td class="py-3" colspan="2" style="border-bottom: none !important;vertical-align: top;">
+                        <span class="transition-swing text-subtitle-2">Add item</span>
+                      </td>
+                      <td class="py-3" colspan="3">
+                        <div class="transition-swing text-subtitle-1 font-weight-medium text--secondary">Subtotal</div>
+                        <div class="mt-1 transition-swing text-subtitle-2">Add tax</div>
+                        <div class="mt-1 transition-swing text-subtitle-2">Add discount</div>
+                      </td>
+                      <td class="py-3 transition-swing text-subtitle-1 font-weight-medium text--secondary" style="vertical-align: top;">$ 0.00</td>
+                    </tr>
+                    <tr>
+                      <td class="py-3" colspan="2" style="border-bottom: none !important;"></td>
+                      <td class="py-3 transition-swing text-subtitle-1 font-weight-medium text--secondary" colspan="3" style="border-bottom: none !important;">Total</td>
+                      <td class="py-3 transition-swing text-subtitle-1 font-weight-medium text--secondary" style="border-bottom: none !important;">$ 0.00</td>
+                    </tr>
                   </template>
                 </v-data-table>
 
