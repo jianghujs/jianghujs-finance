@@ -18,8 +18,11 @@ SQL END!-->
 
 <jh-layout-v3>
 
-<!--   <template slot="serverSearch">
+  <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
+      <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+        <v-select :items="constantCollection.subject" multiple hide-details dense filled v-model="serverSearchInput.subjectCategory"></v-select>
+      </v-col>
       <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
         <v-btn
           class="elevation-0"
@@ -31,7 +34,7 @@ SQL END!-->
         </v-btn>
       </v-col>
     </v-row>
-  </template>-->
+  </template>
 
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
@@ -78,11 +81,7 @@ SQL END!-->
       </v-btn>
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目编码</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['subjectId']"></v-text-field>
-      </v-col>
+     
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目名称</span>
@@ -91,12 +90,12 @@ SQL END!-->
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目分类</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['subjectCategory']"></v-text-field>
+        <v-select :items="constantCollection.subject" dense filled single-line v-model="addItem['subjectCategory']"></v-select>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目余额方向</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['subjectBalanceDirection']"></v-text-field>
+        <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="addItem['subjectBalanceDirection']"></v-select>
       </v-col>
        
     </v-row>
@@ -119,11 +118,7 @@ SQL END!-->
       </v-btn>
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目编码</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['subjectId']"></v-text-field>
-      </v-col>
+    
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目名称</span>
@@ -132,12 +127,12 @@ SQL END!-->
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目分类</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['subjectCategory']"></v-text-field>
+        <v-select :items="constantCollection.subject" dense filled single-line v-model="editItem['subjectCategory']"></v-select>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目余额方向</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['subjectBalanceDirection']"></v-text-field>
+        <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="editItem['subjectBalanceDirection']"></v-select>
       </v-col>
        
 <!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
@@ -186,11 +181,21 @@ new Vue({
       v => !!v || 'This is required',
     ],
     constantCollection: {
+      subject: [
+        {text: '资产', value: '资产'},
+        {text: '负债', value: '负债'},
+        {text: '权益', value: '权益'},
+        {text: '成本', value: '成本'},
+        {text: '损益', value: '损益'},
+      ],
+      subjectDirection: [
+        {text: '借', value: '借'},
+        {text: '贷', value: '贷'},
+      ],
     },
 
     serverSearchInput: {
-      studentId: null,
-      classId: null
+      subjectCategory: null,
     },
     searchInput: null,
     isTableLoading: true,
@@ -281,6 +286,7 @@ new Vue({
     async refreshTableData() {
       this.isTableLoading = true;
       const serverSearchInput = _.pickBy(this.serverSearchInput, value=> !!value);
+      const { subjectCategory ,...serverSearchInputData} = serverSearchInput
       const result = await window.jianghuAxios({
         data: {
           appData: {
@@ -288,6 +294,7 @@ new Vue({
             actionId: 'selectItemList',
             actionData: {},
             where: {},
+            whereIn: { subjectCategory },
             whereLike: serverSearchInput,
             orderBy: [{column: 'operationAt', order: 'desc'}]
           }
