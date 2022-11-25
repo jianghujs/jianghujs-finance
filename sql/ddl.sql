@@ -83,6 +83,6 @@ CREATE TABLE `profit_formula` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `subjectId` varchar(255) DEFAULT NULL COMMENT '科目编码;',
   `countDirection` tinyint(1) NOT NULL COMMENT '运算符号; +、-',
-  `accessRule` varchar(20) NOT NULL DEFAULT '' COMMENT '取数规则; 余额、借方余额、贷房余额、科目借方余额、科目贷方余额'
+  `accessRule` varchar(20) NOT NULL DEFAULT '' COMMENT '取数规则; 余额、借方余额、贷房余额、科目借方余额、科目贷方余额',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB COMMENT = '资产负债计算规则';    
