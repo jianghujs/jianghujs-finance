@@ -14,7 +14,7 @@
     - 总账 页面: 期初余额-本期合计-本年累计  voucher voucher_entry subject_balance
 - 报表
     - 资产负债表: 通过公式配置 将 科目余额 算出 资产负债: 
-        - profit profit_formula subject_balance
+        - subject profit_formula subject_balance
 
 ## 表
 
@@ -23,5 +23,4 @@
     - subject_balance: 科目-期余额
 - voucher: 凭证表; 
     - voucher_entry: 凭证条目====》科目ID、借方金额、贷方金额
-- profit: 资产负债配置
-    - profit_formula: 资产负债计算规则
+- profit_formula: 资产负债计算规则
