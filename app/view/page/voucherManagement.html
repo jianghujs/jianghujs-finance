@@ -80,44 +80,43 @@ SQL END!-->
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证字</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherName']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证号</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherNumber']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证Id</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherId']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">会计区间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['periodId']"></v-text-field>
+        <v-select :items="periodList" item-text="periodId" item-value="periodId" dense filled single-line v-model="addItem['periodId']"></v-select>
       </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">制单人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherCreator']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">记账人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherAccountant']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">审核人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherAudit']"></v-text-field>
-      </v-col>
+   
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">凭证创建时间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherCreateAt']"></v-text-field>
+        <v-menu
+          v-model="isVoucherCreateAtMenuShow"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              class="cus-v-input"
+              dense filled single-line
+              v-model="addItem['voucherCreateAt']"
+              label=""
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="addItem['voucherCreateAt']"
+            @input="isVoucherCreateAtMenuShow = false"
+          ></v-date-picker>
+        </v-menu>
+
       </v-col>
+      <v-col cols="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+        <span class="inputLabel">凭证条目</span>
+        <voucher-management-entry-select v-model="voucherEntryList" :subject-list="subjectList" :rules="voucherEntryRules"/>
+      </v-col> 
        
     </v-row>
     <v-row class="justify-end pr-6">
@@ -139,67 +138,41 @@ SQL END!-->
       </v-btn>
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证字</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherName']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证号</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherNumber']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证Id</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherId']"></v-text-field>
-      </v-col>
+   
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">会计区间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['periodId']"></v-text-field>
+        <v-select :items="periodList" item-text="periodId" item-value="periodId" dense filled single-line v-model="editItem['periodId']"></v-select>
       </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">制单人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherCreator']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">记账人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherAccountant']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">审核人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherAudit']"></v-text-field>
-      </v-col>
+   
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">凭证创建时间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherCreateAt']"></v-text-field>
+        <v-menu
+          v-model="isVoucherCreateAtMenuShow"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              class="cus-v-input"
+              dense filled single-line
+              v-model="editItem['voucherCreateAt']"
+              label=""
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="addItem['voucherCreateAt']"
+            @input="isVoucherCreateAtMenuShow = false"
+          ></v-date-picker>
+        </v-menu>
       </v-col>
-       
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--        &lt;!&ndash; 必填字段样式 demo :rules="requireRules" &ndash;&gt;-->
-<!--            <span class="inputLabel">学生ID</span>-->
-<!--        <v-text-field class="cus-v-input " dense filled single-line label="学生ID" v-model="editItem.studentId" :rules="requireRules"></v-text-field>-->
-<!--      </v-col>-->
-<!--      &lt;!&ndash; select 字段 demo &ndash;&gt;-->
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--            <span class="inputLabel">班级ID</span>-->
-<!--        <v-select class="cus-v-input " dense filled single-line clearable label="班级ID" v-model="editItem.classId" :items="constantCollection.classId"></v-select>-->
-<!--      </v-col>-->
-<!--      &lt;!&ndash; 日期选择 demo &ndash;&gt;-->
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--        <span class="inputLabel">出生日期</span>-->
-<!--        <v-menu class="cus-v-input " offset-y max-width="290">-->
-<!--          <template v-slot:activator="{ on, attrs }">-->
-<!--            <v-text-field class="cus-v-input " dense filled single-line v-on="on" label="出生日期" v-model="editItem.dateOfBirth"></v-text-field>-->
-<!--          </template>-->
-<!--          <v-date-picker color="success" elevation="20" v-model="editItem.dateOfBirth"></v-date-picker>-->
-<!--        </v-menu>-->
-<!--      </v-col>-->
     </v-row>
     <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
       <v-btn color="success" @click="doUiAction('updateItem')">保存</v-btn>
@@ -213,6 +186,7 @@ SQL END!-->
 {% endblock %}
 
 {% block vue_body %}
+{% include 'component/voucherManagement-entrySelect.html' %}
 
 <script type="module">
 new Vue({
@@ -224,6 +198,9 @@ new Vue({
     isFormValid: true,
     requireRules: [
       v => !!v || 'This is required',
+    ],
+    voucherEntryRules: [
+      v => v.length > 0 || 'Name must be less than 10 characters',
     ],
     constantCollection: {
     },
@@ -253,7 +230,11 @@ new Vue({
     isEditDrawerShow: false,
     editItem: {},
     isAddDrawerShow: false,
-    addItem: {}
+    addItem: {},
+    isVoucherCreateAtMenuShow: false,
+    periodList: [],
+    subjectList: [],
+    voucherEntryList: [],
   }),
   computed: {
     isMobile() {
@@ -265,7 +246,11 @@ new Vue({
   },
   watch: {},
   async created() {
-    await this.doUiAction('refreshTableData');
+    await Promise.all([
+      this.doUiAction('refreshTableData'),
+      this.doUiAction('getPeriodList'),
+      this.doUiAction('getSubjectList'),
+    ])
   },
   mounted() {},
   methods: {
@@ -273,6 +258,12 @@ new Vue({
       switch (uiActionId) {
         case 'refreshTableData':
           await this.refreshTableData();
+          break;
+        case 'getPeriodList':
+          await this.getPeriodList();
+          break;
+        case 'getSubjectList':
+          await this.getSubjectList();
           break;
         case 'startCreateItem':
           await this.clearItemData();
@@ -343,7 +334,39 @@ new Vue({
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
+    async getPeriodList() {
+      const result = await window.jianghuAxios({
+        data: {
+          appData: {
+            pageId: 'voucherManagement',
+            actionId: 'selectPeriodList',
+            actionData: {},
+            where: {},
+            orderBy: [{column: 'operationAt', order: 'desc'}]
+          }
+        }
+      });
+      const { rows } = result.data.appData.resultData;
 
+      this.periodList = rows;
+    },
+
+    async getSubjectList() {
+      const result = await window.jianghuAxios({
+        data: {
+          appData: {
+            pageId: 'voucherManagement',
+            actionId: 'selectSubjectList',
+            actionData: {},
+            where: {},
+            orderBy: [{column: 'operationAt', order: 'desc'}]
+          }
+        }
+      });
+      const { rows } = result.data.appData.resultData;
+
+      this.subjectList = rows;
+    },
 
     /**
      * uiActionId:  startCreateItem
@@ -367,16 +390,42 @@ new Vue({
     },
     async doCreateItem() {
       const { id, ...data } = this.addItem;
+      const voucherEntryList = this.voucherEntryList
+
+      // const voucherEntryPromise = []
+      // voucherEntryList.forEach(item=> {
+      //   voucherEntryPromise.push(
+      //     window.jianghuAxios({
+      //       data: {
+      //         appData: {
+      //           pageId: 'voucherManagement',
+      //           actionId: 'insertVoucherEntryItem',
+      //           actionData: {
+      //             ...item,
+      //             voucherId: ''
+      //           }
+      //         }
+      //       }
+      //     })
+      //   )
+      // })
+
       await window.vtoast.loading("新增数据");
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'voucherManagement',
-            actionId: 'insertItem',
-            actionData: data
+      const res = await Promise.all([
+        window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'voucherManagement',
+              actionId: 'createVoucherAndVoucherEntry',
+              actionData: {
+                ...data,
+                voucherEntryList
+              }
+            }
           }
-        }
-      })
+        }),
+      ])
+      console.log('voucherManagement', res)
       await window.vtoast.success("新增数据成功");
     },
     async closeDrawerShow() {
