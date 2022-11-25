@@ -16,19 +16,10 @@
 ## 表
 
 - subject: 科目表; 
-    - subjectId: "科目编号"
-    - subjectClass: "科目分类" 
-    - subjectClass: "科目分类" 
+- voucher: 凭证表; 
+    - voucher_entry: 凭证条目====》科目ID、借方金额、贷方金额
+-     
 
-    
-  `pid` varchar(20) NOT NULL DEFAULT '0' COMMENT '父科目编号',
-  `name` varchar(20) NOT NULL DEFAULT '' COMMENT '科目名称',
-  `direction` varchar(4) NOT NULL COMMENT '余额方向',
-  `is_leaf` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否叶子节点',
-  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '科目状态',
-  `is_cash_account` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否现金科目',
-  `level` tinyint(1) NOT NULL COMMENT '科目级别',
-- 
 
 ## 财务的 核心是
 
