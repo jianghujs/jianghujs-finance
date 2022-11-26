@@ -1,4 +1,4 @@
-<template id="voucher-management-entry-select">
+<template id="voucher-management-entry">
   <v-container class="pa-0">
     <v-card elevation="0" outlined>
       <v-data-table :headers="headers" :items="value" hide-default-footer
@@ -27,8 +27,8 @@
 </template>
 
 <script type="module">
-  Vue.component("voucher-management-entry-select", {
-    template: '#voucher-management-entry-select',
+  Vue.component("voucher-management-entry", {
+    template: '#voucher-management-entry',
     props: {  
       value: {
         type: Array,
