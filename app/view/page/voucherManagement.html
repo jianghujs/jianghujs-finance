@@ -53,15 +53,21 @@ SQL END!-->
                   :headers="headers"
                   :items="tableData"
                   :search="searchInput"
+                  group-by="voucherId"
                   :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
                   :items-per-page="20"
                   mobile-breakpoint="0"
                   :loading="isTableLoading"
                   checkbox-color="success"
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-      <template v-slot:item.action="{ item }">
-        <v-btn small class=" success" @click="doUiAction('startUpdateItem', {item})">修改</v-btn>
-        <v-btn small class=" error" @click="doUiAction('deleteItem', {item})">删除</v-btn>
+      <template v-slot:group.header="{items, isOpen, toggle, remove}">
+        <th colspan="2">
+          <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+          <span class="text-subtitle-2">{{ items[0].voucherCreateAt }} 【{{ items[0].voucherId }}】</span>
+        </th>
+      </template>
+      <template v-slot:item.subject-name="{ item }">
+       {{item.subjectId}} {{item.subjectName}}
       </template>
     </v-data-table>
   </v-card>
@@ -81,7 +87,7 @@ SQL END!-->
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">会计区间</span>
-        <v-select :items="periodList" item-text="periodId" item-value="periodId" dense filled single-line v-model="addItem['periodId']"></v-select>
+        <v-select :rules="requireRules" :items="periodList" item-text="periodId" item-value="periodId" dense filled single-line v-model="addItem['periodId']"></v-select>
       </v-col>
    
        
@@ -97,6 +103,7 @@ SQL END!-->
         >
           <template v-slot:activator="{ on, attrs }">
             <v-text-field
+              :rules="requireRules"
               class="cus-v-input"
               dense filled single-line
               v-model="addItem['voucherCreateAt']"
@@ -215,17 +222,14 @@ new Vue({
     headers: [
       {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
        
-      {text: "凭证字", value: "voucherName", width: 120}, 
-      {text: "凭证号", value: "voucherNumber", width: 120}, 
-      {text: "凭证Id", value: "voucherId", width: 120}, 
-      {text: "会计区间", value: "periodId", width: 120}, 
-      {text: "制单人", value: "voucherCreator", width: 120}, 
-      {text: "记账人", value: "voucherAccountant", width: 120}, 
-      {text: "审核人", value: "voucherAudit", width: 120}, 
-      {text: "凭证创建时间", value: "voucherCreateAt", width: 120}, 
+     
+      {text: "科目", value: "subject-name", width: 120}, 
+      {text: "摘要", value: "entryAbstract", width: 120}, 
+      {text: "借方金额", value: "debit", width: 80}, 
+      {text: "贷方金额", value: "credit", width: 80}, 
+    
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
-      {text: '操作', value: 'action', align: 'center', sortable: false, width: 200, class: 'fixed', cellClass: 'fixed'},
     ],
     isEditDrawerShow: false,
     editItem: {},
@@ -328,6 +332,7 @@ new Vue({
           }
         }
       });
+      
       const { rows } = result.data.appData.resultData;
 
       this.tableDataFromBackend = rows;
@@ -374,6 +379,7 @@ new Vue({
     */
     async clearItemData() {
       this.addItem = {};
+      this.voucherEntryList = []
     },
     async openCreateItemDialog() {
       this.isAddDrawerShow = true;
@@ -392,23 +398,16 @@ new Vue({
       const { id, ...data } = this.addItem;
       const voucherEntryList = this.voucherEntryList
 
-      // const voucherEntryPromise = []
-      // voucherEntryList.forEach(item=> {
-      //   voucherEntryPromise.push(
-      //     window.jianghuAxios({
-      //       data: {
-      //         appData: {
-      //           pageId: 'voucherManagement',
-      //           actionId: 'insertVoucherEntryItem',
-      //           actionData: {
-      //             ...item,
-      //             voucherId: ''
-      //           }
-      //         }
-      //       }
-      //     })
-      //   )
-      // })
+      //判断借贷是否平衡
+      const debitPrice = voucherEntryList.filter(item=> item.debit != 0)
+      .reduce((prev, next)=> next.debit + prev, 0)
+      const creditPrice = voucherEntryList.filter(item=> item.credit != 0)
+      .reduce((prev, next)=> next.credit + prev, 0)
+      if (debitPrice != creditPrice) {
+        window.vtoast.fail({ message: "借贷不平衡!" });
+        throw new Error("[doCreateItem] false");
+      }
+
 
       await window.vtoast.loading("新增数据");
       const res = await Promise.all([
