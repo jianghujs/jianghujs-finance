@@ -97,7 +97,12 @@ SQL END!-->
         <span class="inputLabel">科目余额方向</span>
         <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="addItem['subjectBalanceDirection']"></v-select>
       </v-col>
-       
+ 
+      <!-- <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+        <span class="inputLabel">余额</span>
+        <v-text-field dense filled single-line v-model="addItem['periodStartBalance']"></v-text-field>
+      </v-col>
+        -->
     </v-row>
     <v-row class="justify-end pr-6">
       <v-btn color="success" @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">新增</v-btn>

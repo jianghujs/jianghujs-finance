@@ -1,7 +1,7 @@
 const Service = require('egg').Service;
 const idGenerateUtil = require("@jianghujs/jianghu/app/common/idGenerateUtil");
 const validateUtil = require('@jianghujs/jianghu/app/common/validateUtil');
-const { subjectCategoryEnum } = require('../constant/constant');
+const { subjectCategoryEnum, tableEnum } = require('../constant/constant');
 
 const actionDataScheme = Object.freeze({
   fillInsertItemParamsBeforeHook: {
@@ -43,7 +43,7 @@ class SubjectService extends Service {
         break;
     }
 
-    const maxBizIdResult = await jianghuKnex('subject')
+    const maxBizIdResult = await jianghuKnex(tableEnum.subject)
     .where({ subjectCategory })
     .max('subjectId', {
       as: "maxBizId",
@@ -59,6 +59,20 @@ class SubjectService extends Service {
 
 
     this.ctx.request.body.appData.actionData.subjectId = subjectId;
+  }
+  async addPeriodStartBalance() {
+    const { jianghuKnex } = this.app
+    const { actionData } = this.ctx.request.body.appData;
+    // 创建期初科目余额
+    const { subjectId } = actionData
+
+    // TODO 会计期间怎么获取？期初余额怎么设置
+    await jianghuKnex(tableEnum.subject_balance)
+    .insert({
+      subjectId,
+      isPeriodStart: '是',
+    });
+
   }
 }
 
