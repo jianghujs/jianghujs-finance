@@ -35,178 +35,81 @@ SQL END!-->
 
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
-  <v-card>
-  <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+  <v-row>
+    <v-col cols="2">
+      <v-card height="500">
+        <v-sheet class="pa-4">
+          <v-text-field
+            v-model="search"
+            label="过滤科目"
+            flat
+            solo-inverted
+            hide-details
+            clearable
+            clear-icon="mdi-close-circle-outline"
+          ></v-text-field>
+          <v-checkbox
+            v-model="caseSensitive"
+            hide-details
+            label="是否区分大小写"
+          ></v-checkbox>
+        </v-sheet>
 
-      <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">新增</v-btn>
-        <span class="body-2">共{{ tableData.length }}条记录</span>
-      </v-col>
-
-      <v-spacer></v-spacer>
-
-      <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
-        <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
-      </v-col>
-    </v-row>
-    <v-data-table fixed-header
-                  :headers="headers"
-                  :items="tableData"
-                  :search="searchInput"
-                  :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
-                  :items-per-page="20"
-                  mobile-breakpoint="0"
-                  :loading="isTableLoading"
-                  checkbox-color="success"
-                  class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-      <template v-slot:item.action="{ item }">
-        <v-btn small class=" success" @click="doUiAction('startUpdateItem', {item})">修改</v-btn>
-        <v-btn small class=" error" @click="doUiAction('deleteItem', {item})">删除</v-btn>
-      </template>
-    </v-data-table>
-  </v-card>
+        <v-treeview
+          hoverable
+          activatable
+          dense
+          :active="[serverSearchInput.subjectId]"
+          key="subjectId"
+          :items="subjectList"
+          item-text="subjectName"
+          color="primary"
+          :search="search"
+          :filter="filter"
+        >
+        <template v-slot:label="{ item }">
+          <div @click="doUiAction('handleTreeviewInput',{ item })">
+            {{item.subjectId}} {{item.subjectName}}
+          </div>
+        </template>
+        <template v-slot:prepend="{ item, open }">
+          <v-icon>
+            mdi-file
+          </v-icon>
+        </template>
+      </v-treeview>
+      </v-card>
+    </v-col>
+    <v-col cols="10">
+      <v-card>
+      <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+    
+          <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
+            <span class="body-2">共{{ tableData.length }}条记录</span>
+          </v-col>
+    
+          <v-spacer></v-spacer>
+    
+          <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+            <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
+          </v-col>
+        </v-row>
+        <v-data-table fixed-header
+                      :headers="headers"
+                      :items="tableData"
+                      :search="searchInput"
+                      :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
+                      :items-per-page="20"
+                      mobile-breakpoint="0"
+                      :loading="isTableLoading"
+                      checkbox-color="success"
+                      class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+          
+      </v-card>
+    </v-col>
+  </v-row>
 </v-container>
 
-<!-- 新增 -->
-<v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%" class="elevation-24">
-  <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
-    <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">新增信息</span>
-      <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isAddDrawerShow = false">
-        <v-icon dark>mdi-close</v-icon>
-      </v-btn>
-    </v-row>
-    <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证字</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherName']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证号</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherNumber']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证Id</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherId']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计区间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['periodId']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">制单人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherCreator']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">记账人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherAccountant']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">审核人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherAudit']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证创建时间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['voucherCreateAt']"></v-text-field>
-      </v-col>
-       
-    </v-row>
-    <v-row class="justify-end pr-6">
-      <v-btn color="success" @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">新增</v-btn>
-      <v-btn class="ml-2" @click="isAddDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
-    </v-row>
-  </v-form>
-</v-navigation-drawer>
-
-
-<!-- 编辑抽屉 -->
-<v-navigation-drawer v-model="isEditDrawerShow" :permanent="isEditDrawerShow" fixed temporary right width="80%" class="elevation-24">
-  <v-form v-model="isFormValid" v-if="isEditDrawerShow" ref="form" lazy-validation>
-    <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">编辑信息</span>
-      <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
-        <v-icon dark>mdi-close</v-icon>
-      </v-btn>
-    </v-row>
-    <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证字</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherName']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证号</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherNumber']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证Id</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherId']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计区间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['periodId']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">制单人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherCreator']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">记账人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherAccountant']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">审核人</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherAudit']"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证创建时间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['voucherCreateAt']"></v-text-field>
-      </v-col>
-       
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--        &lt;!&ndash; 必填字段样式 demo :rules="requireRules" &ndash;&gt;-->
-<!--            <span class="inputLabel">学生ID</span>-->
-<!--        <v-text-field class="cus-v-input " dense filled single-line label="学生ID" v-model="editItem.studentId" :rules="requireRules"></v-text-field>-->
-<!--      </v-col>-->
-<!--      &lt;!&ndash; select 字段 demo &ndash;&gt;-->
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--            <span class="inputLabel">班级ID</span>-->
-<!--        <v-select class="cus-v-input " dense filled single-line clearable label="班级ID" v-model="editItem.classId" :items="constantCollection.classId"></v-select>-->
-<!--      </v-col>-->
-<!--      &lt;!&ndash; 日期选择 demo &ndash;&gt;-->
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--        <span class="inputLabel">出生日期</span>-->
-<!--        <v-menu class="cus-v-input " offset-y max-width="290">-->
-<!--          <template v-slot:activator="{ on, attrs }">-->
-<!--            <v-text-field class="cus-v-input " dense filled single-line v-on="on" label="出生日期" v-model="editItem.dateOfBirth"></v-text-field>-->
-<!--          </template>-->
-<!--          <v-date-picker color="success" elevation="20" v-model="editItem.dateOfBirth"></v-date-picker>-->
-<!--        </v-menu>-->
-<!--      </v-col>-->
-    </v-row>
-    <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-      <v-btn color="success" @click="doUiAction('updateItem')">保存</v-btn>
-      <v-btn class="ml-2" @click="isEditDrawerShow = false">取消</v-btn>
-    </v-row>
-  </v-form>
-</v-navigation-drawer>
 
 </jh-layout-v3>
 
@@ -229,8 +132,7 @@ new Vue({
     },
 
     serverSearchInput: {
-      studentId: null,
-      classId: null
+      subjectId: '',
     },
     searchInput: null,
     isTableLoading: true,
@@ -238,22 +140,22 @@ new Vue({
     headers: [
       {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
        
-      {text: "凭证字", value: "voucherName", width: 120}, 
-      {text: "凭证号", value: "voucherNumber", width: 120}, 
-      {text: "凭证Id", value: "voucherId", width: 120}, 
       {text: "会计区间", value: "periodId", width: 120}, 
-      {text: "制单人", value: "voucherCreator", width: 120}, 
-      {text: "记账人", value: "voucherAccountant", width: 120}, 
-      {text: "审核人", value: "voucherAudit", width: 120}, 
+      {text: "凭证字", value: "voucherName", width: 120}, 
+      {text: "凭证Id", value: "voucherId", width: 120}, 
+      {text: "借方金额", value: "debit", width: 80}, 
+      {text: "贷方金额", value: "credit", width: 80}, 
       {text: "凭证创建时间", value: "voucherCreateAt", width: 120}, 
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
-      {text: '操作', value: 'action', align: 'center', sortable: false, width: 200, class: 'fixed', cellClass: 'fixed'},
     ],
     isEditDrawerShow: false,
     editItem: {},
     isAddDrawerShow: false,
-    addItem: {}
+    addItem: {},
+    subjectList: [],
+    search: null,
+    caseSensitive: false,
   }),
   computed: {
     isMobile() {
@@ -261,10 +163,18 @@ new Vue({
     },
     tableData() {
       return this.tableDataFromBackend;
-    }
+    },
+    filter () {
+      return this.caseSensitive
+        ? (item, search, textKey) => item[textKey].indexOf(search) > -1
+        : undefined
+    },
   },
-  watch: {},
+  watch: {
+    
+  },
   async created() {
+    await this.doUiAction('getSubjectList');
     await this.doUiAction('refreshTableData');
   },
   mounted() {},
@@ -273,6 +183,9 @@ new Vue({
       switch (uiActionId) {
         case 'refreshTableData':
           await this.refreshTableData();
+          break;
+        case 'getSubjectList':
+          await this.getSubjectList();
           break;
         case 'startCreateItem':
           await this.clearItemData();
@@ -301,6 +214,10 @@ new Vue({
           await this.doDeleteItem(uiActionData);
           await this.refreshTableData();
           break;
+        case 'handleTreeviewInput':
+          this.handleTreeviewInput(uiActionData);
+          this.refreshTableData();
+          break;
         default:
           console.error("[doUiAction] uiActionId not find", { uiActionId });
           break;
@@ -325,14 +242,14 @@ new Vue({
     async refreshTableData() {
       this.isTableLoading = true;
       const serverSearchInput = _.pickBy(this.serverSearchInput, value=> !!value);
+
       const result = await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'voucherManagement',
-            actionId: 'selectItemList',
+            pageId: 'accountDetailsManagement',
+            actionId: 'selectVoucherEntryList',
             actionData: {},
-            where: {},
-            whereLike: serverSearchInput,
+            where: serverSearchInput,
             orderBy: [{column: 'operationAt', order: 'desc'}]
           }
         }
@@ -343,7 +260,23 @@ new Vue({
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
+    async getSubjectList() {
+      const result = await window.jianghuAxios({
+        data: {
+          appData: {
+            pageId: 'accountDetailsManagement',
+            actionId: 'selectSubjectList',
+            actionData: {},
+            where: {},
+            orderBy: [{column: 'subjectId', order: 'asc'}]
+          }
+        }
+      });
+      const { rows } = result.data.appData.resultData;
 
+      this.subjectList = rows;
+      this.serverSearchInput.subjectId = rows[0].subjectId
+    },
 
     /**
      * uiActionId:  startCreateItem
@@ -443,6 +376,9 @@ new Vue({
       });
       await window.vtoast.success("删除数据成功");
     },
+    async handleTreeviewInput({ item }) {
+      this.serverSearchInput.subjectId = item.subjectId
+    }
   }
 })
 </script>
