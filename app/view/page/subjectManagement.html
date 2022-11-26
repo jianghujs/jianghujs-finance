@@ -200,7 +200,7 @@ new Vue({
     },
 
     serverSearchInput: {
-      subjectCategory: null,
+      subjectCategory: ['资产', '负债', '权益', '成本', '损益'],
     },
     searchInput: null,
     isTableLoading: true,
@@ -300,7 +300,6 @@ new Vue({
             actionData: {},
             where: {},
             whereIn: { subjectCategory },
-            whereLike: serverSearchInput,
             orderBy: [{column: 'operationAt', order: 'desc'}]
           }
         }
