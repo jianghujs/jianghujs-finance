@@ -1,0 +1,93 @@
+<template id="assets-and-liabilities-management-formula">
+  <v-container class="pa-0">
+    <v-card elevation="0" outlined>
+      <v-data-table :headers="headers" :items="value" hide-default-footer
+        class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+       
+        <template v-slot:item.subject-id="{ item }">
+          <v-select :items="subjectList" item-text="subjectName" item-value="subjectId" class="cus-v-input mr-2" dense filled single-line v-model="item.subjectId"> </v-select>
+        </template>
+        <template v-slot:item.count-direction="{ item }">
+          <v-select :items="['+', '-']" class="cus-v-input mr-2" dense filled single-line v-model="item.countDirection"> </v-select>
+        </template>
+        <template v-slot:item.access-rule="{ item }">
+          <v-select :items="['余额', '借方余额', '贷方余额', '科目借方余额', '科目借方余额']" class="cus-v-input mr-2" dense filled single-line v-model="item.accessRule"> </v-select>
+        </template>
+
+        <template v-slot:item.action="{ item, index }">
+          <v-btn small class="error" @click="doUiAction('deleteItem', {item, index})">删除</v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
+    <v-btn class="add-btn" @click="doUiAction('addItem')">添加公式</v-btn>
+  </v-container>
+</template>
+
+<script type="module">
+  Vue.component("assets-and-liabilities-management-formula", {
+    template: '#assets-and-liabilities-management-formula',
+    props: {  
+      value: {
+        type: Array,
+        default: () => [{subjectId: null, countDirection: null, accessRule: null}],
+      },
+      subjectList: {
+        type: Array,
+        default: () => [],
+      },
+    },
+    data: () => ({
+      headers: [
+        { text: "科目", value: "subject-id", width: 80 },
+        { text: "运算符号", value: "count-direction", width: 40 },
+        { text: "取数规则", value: "access-rule", width: 80 },
+
+        { text: '操作', value: 'action', align: 'center', sortable: false, width: 100, class: 'fixed', cellClass: 'fixed' },
+      ]
+    }),
+    computed: {
+      isMobile() {
+        return window.innerWidth < 600;
+      }
+    },
+    watch: { },
+    async created() {
+      
+    },
+    mounted() { },
+    methods: {
+      async doUiAction(uiActionId, uiActionData) {
+        switch (uiActionId) {
+          case 'addItem':
+            await this.doAddItem();
+            break;
+          case 'deleteItem':
+            await this.doDeleteItem(uiActionData);
+            break;
+     
+          default:
+            console.error("[doUiAction] uiActionId not find", { uiActionId });
+            break;
+        }
+      },
+      
+    
+      async doAddItem() {
+        this.$emit("input", [...this.value, { entryAbstract: null, subjectId: null, debit: 0, credit: 0 }]);
+      },
+      async doDeleteItem({index}) {
+        let list = _.cloneDeep(this.value);
+        list.splice(index, 1);
+        this.$emit("input", list);
+        this.$emit("change", list);
+      },
+    }
+  })
+</script>
+<style>
+.add-btn {
+  width: 100%;
+  margin-top: 5px;
+  padding: 5px;
+}
+</style>

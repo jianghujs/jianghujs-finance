@@ -122,7 +122,7 @@ SQL END!-->
       </v-col>
       <v-col cols="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">凭证条目</span>
-        <voucher-management-entry-select v-model="voucherEntryList" :subject-list="subjectList" :rules="voucherEntryRules"/>
+        <voucher-management-entry v-model="voucherEntryList" :subject-list="subjectList" :rules="voucherEntryRules"/>
       </v-col> 
        
     </v-row>
@@ -193,7 +193,7 @@ SQL END!-->
 {% endblock %}
 
 {% block vue_body %}
-{% include 'component/voucherManagement-entrySelect.html' %}
+{% include 'component/voucherManagement-entry.html' %}
 
 <script type="module">
 new Vue({
