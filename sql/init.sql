@@ -83,14 +83,20 @@ CREATE TABLE `_page` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 40 COMMENT = '页面表; 软删除未启用;';
+) ENGINE = InnoDB AUTO_INCREMENT = 46 COMMENT = '页面表; 软删除未启用;';
 
 
 
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (2,'help','helpV3','帮助','dynamicInMenu','11','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (4,'login','loginV3','登陆','','','insert',NULL,NULL,NULL);
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (38,'createInvoice',NULL,'createInvoice【测试页面】','showInMenu','3','insert',NULL,NULL,NULL);
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (39,'customerDetail',NULL,'Customer【测试页面】','showInMenu','4','insert','vscode','vscode','2022-08-16T15:59:14+08:00');
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (38,'createInvoice',NULL,'createInvoice【测试页面】','','3','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (39,'customerDetail',NULL,'Customer【测试页面】','','4','insert','vscode','vscode','2022-08-16T15:59:14+08:00');
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (40,'periodManagement',NULL,'会计期间','showInMenu','5','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (41,'subjectManagement',NULL,'科目设置','showInMenu','5','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (42,'voucherManagement',NULL,'录入凭证','showInMenu','5','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (43,'accountDetailsManagement',NULL,'账目明细','showInMenu','5','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (44,'generalLedgerManagement',NULL,'总账','showInMenu','5','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (45,'assetsAndLiabilitiesManagement',NULL,'资产负债','showInMenu','6','insert',NULL,NULL,NULL);
 
 
 
@@ -112,7 +118,7 @@ CREATE TABLE `_record_history` (
   PRIMARY KEY (`id`),
   KEY `index_record_id` (`recordId`),
   KEY `index_table_action` (`table`, `operation`)
-) ENGINE = InnoDB AUTO_INCREMENT = 3 COMMENT = '数据历史表';
+) ENGINE = InnoDB AUTO_INCREMENT = 12 COMMENT = '数据历史表';
 
 
 
@@ -139,7 +145,7 @@ CREATE TABLE `_resource` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 357 COMMENT = '请求资源表; 软删除未启用; resourceId=`${appId}.${pageId}.${actionId}`';
+) ENGINE = InnoDB AUTO_INCREMENT = 378 COMMENT = '请求资源表; 软删除未启用; resourceId=`${appId}.${pageId}.${actionId}`';
 
 
 
@@ -179,7 +185,28 @@ INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`acti
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (353,NULL,NULL,'dataAccessRight','updateItem','✅数据权限-更新成员','sql','{}','{\"table\": \"student\", \"operation\": \"jhUpdate\"}','','','insert',NULL,NULL,NULL);
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (354,NULL,NULL,'dataAccessRight','deleteItem','✅数据权限-删除信息','sql','{}','{\"table\": \"student\", \"operation\": \"jhDelete\"}','','','insert',NULL,NULL,NULL);
 INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (355,NULL,NULL,'dataAccessRight','selectItemListByService','✅数据权限-查询列表','service','{}','{\"service\": \"student\", \"serviceFunction\": \"selectStudentList\"}','','','insert',NULL,NULL,NULL);
-INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (356,NULL,'{\"after\": [], \"before\": [{\"service\": \"student\", \"serviceFunction\": \"appendStudentInfoToUserInfo\"}]}','dataAccessRight','selectItemListByDynamicData','✅数据权限-查询列表','sql','{}','{\"table\": \"student\", \"where\": {\"classId\": \"ctx.userInfo.studentInfo.classId\"}, \"operation\": \"select\"}','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (356,NULL,'','dataAccessRight','selectItemListByDynamicData','✅数据权限-查询列表','sql','{}','{\"table\": \"student\", \"where\": {\"classId\": \"ctx.userInfo.studentInfo.classId\"}, \"operation\": \"select\"}','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (357,NULL,NULL,'periodManagement','selectItemList','✅查询列表','sql','{}','{ \"table\": \"period\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (358,NULL,NULL,'periodManagement','insertItem','✅添加','sql','{}','{ \"table\": \"period\", \"operation\": \"insert\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (359,NULL,NULL,'periodManagement','updateItem','✅更新','sql','{}','{ \"table\": \"period\", \"operation\": \"jhUpdate\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (360,NULL,NULL,'periodManagement','deleteItem','✅删除','sql','{}','{ \"table\": \"period\", \"operation\": \"jhDelete\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (361,NULL,'','subjectManagement','selectItemList','✅查询列表','sql','{}','{ \"table\": \"subject\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (362,NULL,'{\"after\": [{\"service\": \"subject\", \"serviceFunction\": \"addPeriodStartBalance\"}], \"before\": [{\"service\": \"subject\", \"serviceFunction\": \"fillInsertItemParamsBeforeHook\"}]}','subjectManagement','insertItem','✅添加','sql','{}','{ \"table\": \"subject\", \"operation\": \"insert\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (363,NULL,NULL,'subjectManagement','updateItem','✅更新','sql','{}','{ \"table\": \"subject\", \"operation\": \"jhUpdate\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (364,NULL,NULL,'subjectManagement','deleteItem','✅删除','sql','{}','{ \"table\": \"subject\", \"operation\": \"jhDelete\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (365,NULL,NULL,'voucherManagement','selectItemList','✅查询列表','sql','{}','{ \"table\": \"view01_voucher_entry\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (366,NULL,'','voucherManagement','insertItem','✅添加','sql','{}','{ \"table\": \"voucher\", \"operation\": \"insert\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (367,NULL,NULL,'voucherManagement','updateItem','✅更新','sql','{}','{ \"table\": \"voucher\", \"operation\": \"jhUpdate\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (368,NULL,NULL,'voucherManagement','deleteItem','✅删除','sql','{}','{ \"table\": \"voucher\", \"operation\": \"jhDelete\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (369,NULL,NULL,'voucherManagement','selectPeriodList','✅查询会计期间列表','sql','{}','{ \"table\": \"period\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (370,NULL,'','voucherManagement','selectSubjectList','✅查询科目列表','sql','{}','{ \"table\": \"subject\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (371,NULL,NULL,'voucherManagement','insertVoucherEntryItem','✅添加凭证条目','sql','{}','{ \"table\": \"voucher_entry\", \"operation\": \"insert\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (372,NULL,NULL,'voucherManagement','createVoucherAndVoucherEntry','✅添加凭证和条目','service','{}','{\"service\": \"voucher\", \"serviceFunction\": \"createVoucherAndVoucherEntry\"}','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (373,NULL,'','accountDetailsManagement','selectSubjectList','✅查询科目列表','sql','{}','{ \"table\": \"subject\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (374,NULL,NULL,'accountDetailsManagement','selectVoucherEntryList','✅添加凭证条目列表','sql','{}','{ \"table\": \"view01_voucher_entry\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (375,NULL,NULL,'generalLedgerManagement','selectItemList','✅查询总账','sql','{}','{ \"table\": \"view01_voucher_entry\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (376,NULL,NULL,'assetsAndLiabilitiesManagement','selectItemList','✅查询资产负债列表','sql','{}','{ \"table\": \"balance_sheet\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
+INSERT INTO `_resource` (`id`,`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (377,NULL,NULL,'assetsAndLiabilitiesManagement','selectSubjectList','✅查询科目列表','sql','{}','{ \"table\": \"subject\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL);
 
 
 
@@ -405,34 +432,84 @@ CREATE TABLE `_user_session` (
   KEY `userId_index` (`userId`),
   KEY `userId_deviceId_index` (`userId`, `deviceId`) USING BTREE,
   KEY `authToken_index` (`authToken`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 COMMENT = '用户session表; deviceId 维度;软删除未启用;';
+) ENGINE = InnoDB AUTO_INCREMENT = 3 COMMENT = '用户session表; deviceId 维度;软删除未启用;';
 
 
 
 
 # ------------------------------------------------------------
-# SCHEMA DUMP FOR TABLE: access_control_student
+# SCHEMA DUMP FOR TABLE: balance_sheet
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `access_control_student`;
-CREATE TABLE `access_control_student` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `userId` varchar(255) DEFAULT NULL COMMENT '主键id',
-  `username` varchar(255) DEFAULT NULL COMMENT '用户名(登陆)',
-  `resourceData` varchar(255) DEFAULT NULL COMMENT '明文密码',
-  `operation` varchar(255) DEFAULT 'insert' COMMENT '操作; insert, update, jhInsert, jhUpdate, jhDelete jhRestore',
-  `operationByUserId` varchar(255) DEFAULT NULL COMMENT '操作者userId',
-  `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
-  `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `username_index` (`username`),
-  UNIQUE KEY `userId_index` (`userId`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 52 COMMENT = '学生表的 accessControl 表';
+DROP TABLE IF EXISTS `balance_sheet`;
+CREATE TABLE `balance_sheet` (
+  `criteria` int(11) NOT NULL COMMENT '会计制度',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `item` varchar(100) DEFAULT '' COMMENT '项目',
+  `row` varchar(100) DEFAULT '' COMMENT '行次',
+  `level` int(11) DEFAULT NULL COMMENT '层级',
+  `count` int(11) DEFAULT '0' COMMENT '计算',
+  `direction` varchar(10) DEFAULT NULL COMMENT '方向',
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 65 COMMENT = '资产负债表';
 
 
 
-INSERT INTO `access_control_student` (`id`,`userId`,`username`,`resourceData`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (50,'G00001','洪七公','{ \"where\":{\"level\": \"02\"} }','insert',NULL,NULL,NULL);
-INSERT INTO `access_control_student` (`id`,`userId`,`username`,`resourceData`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (51,'H00001','岳不群','{ \"where\":{\"level\": \"02\"} }','insert',NULL,NULL,NULL);
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,2,'货币资金','1',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,3,'短期投资','2',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,4,'应收票据','3',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,5,'应收账款','4',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,6,'预付账款','5',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,7,'应收股利','6',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,8,'应收利息','7',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,9,'其他应收款','8',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,10,'存货','9',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,11,'其中：原材料','10',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,12,'在产品','11',2,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,13,'库存商品','12',2,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,14,'周转材料','13',3,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,15,'其他流动资产','14',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,16,'流动资产合计','15',0,0,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,17,'非流动资产','57',0,0,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,18,'长期债券投资','16',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,19,'长期股权投资','17',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,20,'固定资产原价','18',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,21,'减：累计折旧','19',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,22,'固定资产账面价值','20',1,0,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,23,'在建工程','21',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,24,'工程物资','22',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,25,'固定资产清理','23',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,26,'生产性生物资产','24',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,27,'无形资产','25',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,28,'开发支出','26',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,29,'长期待摊费用','27',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,30,'其他非流动资产','28',1,1,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,31,'非流动资产合计','29',2,0,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,32,'资产总计','30',0,0,'借');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,34,'短期借款','31',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,35,'应付票据','32',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,36,'应付账款','33',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,37,'预收账款','34',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,38,'应付职工薪酬','35',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,39,'应交税费','36',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,40,'应付利息','37',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,41,'应付利润','38',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,42,'其他应付款','39',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,43,'其他流动负债','40',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,45,'非流动负债：','54',0,0,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,46,'长期借款','42',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,47,'长期应付款','43',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,48,'递延收益','44',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,49,'其他非流动负债','45',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,50,'非流动负债合计','46',2,0,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,51,'负债合计','47',3,0,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,58,'所有者权益（或股东权益）：','55',0,0,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,59,'实收资本（或股本）','48',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,60,'资本公积','49',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,61,'盈余公积','50',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,62,'未分配利润','51',1,1,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,63,'所有者权益（或股东权益）合计','52',2,0,'贷');
+INSERT INTO `balance_sheet` (`criteria`,`id`,`item`,`row`,`level`,`count`,`direction`) VALUES (1,64,'负债和所有者权益（或股东权益）总计','53',0,0,'贷');
 
 
 
@@ -450,10 +527,13 @@ CREATE TABLE `period` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB COMMENT = '会计区间表';
+) ENGINE = InnoDB AUTO_INCREMENT = 4 COMMENT = '会计区间表';
 
 
 
+INSERT INTO `period` (`id`,`periodId`,`isCheckout`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (1,'2022-11',NULL,'insert','admin','系统管理员','2022-11-25T21:26:40+08:00');
+INSERT INTO `period` (`id`,`periodId`,`isCheckout`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (2,'2022-10',NULL,'insert','admin','系统管理员','2022-11-25T21:27:57+08:00');
+INSERT INTO `period` (`id`,`periodId`,`isCheckout`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (3,'2022-09',NULL,'insert','admin','系统管理员','2022-11-25T21:28:15+08:00');
 
 
 
@@ -480,42 +560,13 @@ CREATE TABLE `profit_formula` (
 
 
 # ------------------------------------------------------------
-# SCHEMA DUMP FOR TABLE: student
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `student`;
-CREATE TABLE `student` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `studentId` varchar(255) DEFAULT NULL COMMENT '学生ID',
-  `name` varchar(255) DEFAULT NULL COMMENT '学生名字',
-  `gender` varchar(255) DEFAULT NULL COMMENT '性别',
-  `dateOfBirth` varchar(255) DEFAULT NULL COMMENT '出生日期',
-  `classId` varchar(255) DEFAULT NULL COMMENT '班级ID',
-  `level` varchar(255) DEFAULT NULL COMMENT '年级',
-  `bodyHeight` varchar(255) DEFAULT NULL COMMENT '身高',
-  `studentStatus` varchar(255) DEFAULT NULL COMMENT '学生状态',
-  `remarks` mediumtext COMMENT '备注',
-  `operation` varchar(255) DEFAULT 'insert' COMMENT '操作; insert, update, jhInsert, jhUpdate, jhDelete jhRestore',
-  `operationByUserId` varchar(255) DEFAULT NULL COMMENT '操作者userId',
-  `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
-  `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `studentId` (`studentId`) USING BTREE
-) ENGINE = InnoDB;
-
-
-
-
-
-
-# ------------------------------------------------------------
 # SCHEMA DUMP FOR TABLE: subject
 # ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `subject`;
 CREATE TABLE `subject` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subjectId` varchar(255) DEFAULT NULL COMMENT '科目编码; 资产类 11001++, 负债类12001++..',
+  `subjectId` varchar(255) DEFAULT NULL COMMENT '科目编码; 资产类 1001++, 负债类2001++..',
   `subjectName` varchar(255) DEFAULT NULL COMMENT '科目名称;',
   `subjectCategory` varchar(255) DEFAULT NULL COMMENT '科目分类;资产, 负债, 权益, 成本, 损益',
   `subjectBalanceDirection` varchar(4) NOT NULL COMMENT '科目余额方向; 借、贷',
@@ -524,10 +575,17 @@ CREATE TABLE `subject` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB COMMENT = '科目表';
+) ENGINE = InnoDB AUTO_INCREMENT = 11 COMMENT = '科目表';
 
 
 
+INSERT INTO `subject` (`id`,`subjectId`,`subjectName`,`subjectCategory`,`subjectBalanceDirection`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (3,'1000','库存现金','资产','借','insert','admin','系统管理员','2022-11-25T22:03:14+08:00');
+INSERT INTO `subject` (`id`,`subjectId`,`subjectName`,`subjectCategory`,`subjectBalanceDirection`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (5,'2000','短期借款','负债','贷','insert','admin','系统管理员','2022-11-25T22:09:20+08:00');
+INSERT INTO `subject` (`id`,`subjectId`,`subjectName`,`subjectCategory`,`subjectBalanceDirection`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (6,'3000','实收资本','权益','贷','insert','admin','系统管理员','2022-11-25T22:09:41+08:00');
+INSERT INTO `subject` (`id`,`subjectId`,`subjectName`,`subjectCategory`,`subjectBalanceDirection`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (7,'1001','银行存款','资产','借','insert','admin','系统管理员','2022-11-25T22:10:19+08:00');
+INSERT INTO `subject` (`id`,`subjectId`,`subjectName`,`subjectCategory`,`subjectBalanceDirection`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (8,'2001','应付票据','负债','贷','insert','admin','系统管理员','2022-11-25T22:10:47+08:00');
+INSERT INTO `subject` (`id`,`subjectId`,`subjectName`,`subjectCategory`,`subjectBalanceDirection`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (9,'1002','固定资产','资产','借','insert','admin','系统管理员','2022-11-26T15:18:09+08:00');
+INSERT INTO `subject` (`id`,`subjectId`,`subjectName`,`subjectCategory`,`subjectBalanceDirection`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (10,'2002','应收票据','负债','借','insert','admin','系统管理员','2022-11-26T15:18:46+08:00');
 
 
 
@@ -545,16 +603,21 @@ CREATE TABLE `subject_balance` (
   `occurDebit` decimal(14, 2) NOT NULL DEFAULT '0.00' COMMENT '借方发生额',
   `occurCredit` decimal(14, 2) NOT NULL DEFAULT '0.00' COMMENT '贷方发生额',
   `occurAmount` decimal(14, 2) NOT NULL DEFAULT '0.00' COMMENT '实际损益发生额;（年中账套）',
+  `periodStartBalance` decimal(14, 2) NOT NULL COMMENT '期初余额;',
   `isPeriodStart` varchar(255) NOT NULL DEFAULT '否' COMMENT '是否期初',
   `operation` varchar(255) DEFAULT 'insert' COMMENT '操作; insert, update, jhInsert, jhUpdate, jhDelete jhRestore',
   `operationByUserId` varchar(255) DEFAULT NULL COMMENT '操作者userId',
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB COMMENT = '科目余额表-会计区间维度';
+) ENGINE = InnoDB AUTO_INCREMENT = 5 COMMENT = '科目余额表-会计区间维度';
 
 
 
+INSERT INTO `subject_balance` (`id`,`periodId`,`subjectId`,`debit`,`credit`,`occurDebit`,`occurCredit`,`occurAmount`,`periodStartBalance`,`isPeriodStart`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (1,'2022-09','1002',3000.00,0.00,0.00,0.00,0.00,0.00,'否','insert',NULL,NULL,'2022-11-26T15:19:37+08:00');
+INSERT INTO `subject_balance` (`id`,`periodId`,`subjectId`,`debit`,`credit`,`occurDebit`,`occurCredit`,`occurAmount`,`periodStartBalance`,`isPeriodStart`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (2,'2022-09','1001',0.00,3000.00,0.00,0.00,0.00,0.00,'否','insert',NULL,NULL,'2022-11-26T15:19:37+08:00');
+INSERT INTO `subject_balance` (`id`,`periodId`,`subjectId`,`debit`,`credit`,`occurDebit`,`occurCredit`,`occurAmount`,`periodStartBalance`,`isPeriodStart`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (3,'2022-09','2002',50000.00,0.00,0.00,0.00,0.00,0.00,'否','insert',NULL,NULL,'2022-11-26T15:23:17+08:00');
+INSERT INTO `subject_balance` (`id`,`periodId`,`subjectId`,`debit`,`credit`,`occurDebit`,`occurCredit`,`occurAmount`,`periodStartBalance`,`isPeriodStart`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (4,'2022-09','2001',0.00,50000.00,0.00,0.00,0.00,0.00,'否','insert',NULL,NULL,'2022-11-26T15:23:17+08:00');
 
 
 
@@ -578,10 +641,12 @@ CREATE TABLE `voucher` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB COMMENT = '凭证表';
+) ENGINE = InnoDB AUTO_INCREMENT = 15 COMMENT = '凭证表';
 
 
 
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherCreateAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (13,'记2022',10000,'记202210000','2022-09','','系统管理员','','2022-11-26','insert',NULL,NULL,'2022-11-26T15:19:37+08:00');
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherCreateAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (14,'记2022',10001,'记202210001','2022-09','','系统管理员','','2022-11-25','insert',NULL,NULL,'2022-11-26T15:23:17+08:00');
 
 
 
@@ -593,6 +658,7 @@ DROP TABLE IF EXISTS `voucher_entry`;
 CREATE TABLE `voucher_entry` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `voucherId` varchar(255) DEFAULT NULL COMMENT '凭证Id;',
+  `subjectId` varchar(255) DEFAULT NULL COMMENT '科目id;',
   `entryAbstract` varchar(255) NOT NULL COMMENT '摘要',
   `debit` decimal(14, 2) NOT NULL DEFAULT '0.00' COMMENT '借方金额',
   `credit` decimal(14, 2) NOT NULL DEFAULT '0.00' COMMENT '贷方金额',
@@ -601,10 +667,14 @@ CREATE TABLE `voucher_entry` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB COMMENT = '凭证条目表';
+) ENGINE = InnoDB AUTO_INCREMENT = 13 COMMENT = '凭证条目表';
 
 
 
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (9,'记202210000','1002','购打印机',3000.00,0.00,'insert',NULL,NULL,'2022-11-26T15:19:37+08:00');
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (10,'记202210000','1001','银行存款',0.00,3000.00,'insert',NULL,NULL,'2022-11-26T15:19:37+08:00');
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (11,'记202210001','2002','提现',50000.00,0.00,'insert',NULL,NULL,'2022-11-26T15:23:17+08:00');
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (12,'记202210001','2001','提现',0.00,50000.00,'insert',NULL,NULL,'2022-11-26T15:23:17+08:00');
 
 
 
@@ -630,6 +700,49 @@ select
   `_user`.`operationAt` AS `operationAt`
 from
   `_user`;
+
+
+
+
+
+# ------------------------------------------------------------
+# SCHEMA DUMP FOR TABLE: view01_voucher_entry
+# ------------------------------------------------------------
+
+CREATE OR REPLACE VIEW `view01_voucher_entry` AS
+select
+  `voucher_entry`.`id` AS `id`,
+  `voucher_entry`.`voucherId` AS `voucherId`,
+  `voucher_entry`.`subjectId` AS `subjectId`,
+  `voucher_entry`.`entryAbstract` AS `entryAbstract`,
+  `voucher_entry`.`debit` AS `debit`,
+  `voucher_entry`.`credit` AS `credit`,
+  `voucher_entry`.`operation` AS `operation`,
+  `voucher_entry`.`operationByUserId` AS `operationByUserId`,
+  `voucher_entry`.`operationByUser` AS `operationByUser`,
+  `voucher_entry`.`operationAt` AS `operationAt`,
+  `subject`.`subjectName` AS `subjectName`,
+  `subject`.`subjectCategory` AS `subjectCategory`,
+  `voucher`.`voucherName` AS `voucherName`,
+  `voucher`.`periodId` AS `periodId`,
+  `voucher`.`voucherCreateAt` AS `voucherCreateAt`,
+  `subject`.`subjectBalanceDirection` AS `subjectBalanceDirection`
+from
+  (
+  (
+    `voucher_entry`
+    join `subject` on(
+    (
+      `voucher_entry`.`subjectId` = `subject`.`subjectId`
+    )
+    )
+  )
+  join `voucher` on(
+    (
+    `voucher_entry`.`voucherId` = `voucher`.`voucherId`
+    )
+  )
+  );
 
 
 
