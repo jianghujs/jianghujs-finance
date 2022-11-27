@@ -80,7 +80,7 @@ SQL END!-->
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计区间（如2022-11）</span>
+        <span class="inputLabel">会计期间（如2022-11）</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['periodId']"></v-text-field>
       </v-col>
        
@@ -111,7 +111,7 @@ SQL END!-->
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计区间Id</span>
+        <span class="inputLabel">会计期间Id</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['periodId']"></v-text-field>
       </v-col>
        
@@ -176,12 +176,8 @@ new Vue({
     isTableLoading: true,
     tableDataFromBackend: [],
     headers: [
-      {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
-       
-      {text: "会计区间Id", value: "periodId", width: 120}, 
+      {text: "会计期间", value: "periodId", width: 120, class: 'fixed', cellClass: 'fixed'}, 
       {text: "是否结算", value: "isCheckout", width: 120}, 
-      {text: "操作者", value: "operationByUser", width: 120},
-      {text: "操作时间", value: "operationAt", width: 250},
     ],
     isEditDrawerShow: false,
     editItem: {},

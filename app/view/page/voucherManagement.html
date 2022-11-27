@@ -86,7 +86,7 @@ SQL END!-->
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计区间</span>
+        <span class="inputLabel">会计期间</span>
         <v-select :rules="requireRules" :items="periodList" item-text="periodId" item-value="periodId" dense filled single-line v-model="addItem['periodId']"></v-select>
       </v-col>
    
@@ -148,7 +148,7 @@ SQL END!-->
    
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计区间</span>
+        <span class="inputLabel">会计期间</span>
         <v-select :items="periodList" item-text="periodId" item-value="periodId" dense filled single-line v-model="editItem['periodId']"></v-select>
       </v-col>
    
