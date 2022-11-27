@@ -2,76 +2,79 @@ const Service = require('egg').Service;
 const idGenerateUtil = require("@jianghujs/jianghu/app/common/idGenerateUtil");
 const validateUtil = require('@jianghujs/jianghu/app/common/validateUtil');
 const { subjectCategoryEnum, tableEnum } = require('../constant/constant');
+const { BizError, errorInfoEnum } = require('../constant/error');
 
 const actionDataScheme = Object.freeze({
+  selectNextVoucherNumber: {
+    type: 'object',
+    additionalProperties: true,
+    required: ['voucherName'],
+    properties: {
+      voucherName: { type: 'string' },
+    },
+  },
   createVoucherAndVoucherEntry: {
     type: 'object',
     additionalProperties: true,
-    required: ['voucherEntryList', 'periodId', 'voucherCreateAt'],
+    required: ['voucherEntryList', 'periodId', 'voucherAt', 'voucherName', 'voucherNumber'],
     properties: {
       voucherEntryList: { type: 'array' },
       periodId: { type: 'string' },
-      voucherCreateAt: { type: 'string' },
+      voucherAt: { type: 'string' },
+      voucherName: { type: 'string' },
+      voucherNumber: { anyOf: [{ type: "string" }, { type: "number" }] },
     },
   },
 });
 
 class VoucherService extends Service {
 
-  async _buildVoucherParam() {
-    const { jianghuKnex } = this.app;
-    const { username } = this.ctx.userInfo;
+  async selectNextVoucherNumber() {
+    const { knex } = this.app;
+    const { actionData } = this.ctx.request.body.appData
+    validateUtil.validate(actionDataScheme.selectNextVoucherNumber, actionData);
+    const { voucherName } = actionData;
 
-    const voucherNumber = await idGenerateUtil.idPlus({
-      knex: jianghuKnex,
-      tableName: tableEnum.voucher,
-      columnName: 'voucherNumber',
-    });
-    const voucherName = '记2022';
+    const maxVoucherNumberResult = await knex(tableEnum.voucher)
+      .where({ voucherName })
+      .max('voucherNumber', {
+        as: "maxVoucherNumber",
+      })
+      .first();
+    if (!maxVoucherNumberResult.maxVoucherNumber) {
+      return { voucherNumber: 1 };
+    }
 
-    return {
-      voucherName,
-      voucherNumber,
-      voucherId: `${voucherName}${voucherNumber}`,
-      voucherAccountant: username
-    };
+    return { voucherNumber: maxVoucherNumberResult.maxVoucherNumber + 1 };
   }
 
   // 创建凭证和凭证条目
   async createVoucherAndVoucherEntry() {
     const { jianghuKnex } = this.app
+    const { username } = this.ctx.userInfo;
     const { actionData } = this.ctx.request.body.appData
-    validateUtil.validate(actionDataScheme.createVoucherAndVoucherEntry, actionData, '凭证生成');
-    const { voucherEntryList, ...data } = actionData;
+    validateUtil.validate(actionDataScheme.createVoucherAndVoucherEntry, actionData);
+    const { voucherEntryList, periodId, voucherAt, voucherName, voucherNumber} = actionData;
 
-    const voucherInfo = await this._buildVoucherParam();
+    const voucherId = `${voucherName}-${voucherNumber}`;
+    const countResult = await jianghuKnex(tableEnum.voucher).where({ voucherId }).count('voucherId as count');
+    if (countResult[0].count > 0) {
+      throw new BizError(errorInfoEnum.voucherId_exist);
+    }
 
-    const { voucherId } = voucherInfo;
-    const voucherEntryPromise = [];
-    voucherEntryList.forEach(item => {
-      voucherEntryPromise.push(
-        jianghuKnex(tableEnum.voucher_entry).insert({ ...item, voucherId })
-      )
-      // 创建科目余额
-      voucherEntryPromise.push(
-        jianghuKnex(tableEnum.subject_balance).insert({
-          periodId: data.periodId,
-          subjectId: item.subjectId,
-          debit: item.debit,
-          credit: item.credit,
-        })
-      )
+    await jianghuKnex.transaction(async trx => {
+      await trx(tableEnum.voucher).insert({
+        voucherId, voucherName, voucherNumber,
+        periodId, voucherAt, voucherAccountant: username
+      });
+
+      voucherEntryList.forEach(voucherEntry => {
+        voucherEntry.voucherId = voucherId;
+      });
+      await trx(tableEnum.voucher_entry).insert(voucherEntryList);
+
+      // TODO: 触发更新科目余额
     });
-    // TODO 借贷不平衡判断
-
-    await Promise.all([
-      // 创建凭证
-      jianghuKnex(tableEnum.voucher).insert({
-        ...data,
-        ...voucherInfo
-      }),
-      ...voucherEntryPromise
-    ]);
   }
 }
 

@@ -11,10 +11,14 @@
           <v-select :items="subjectList" item-text="subjectName" item-value="subjectId" class="cus-v-input mr-2" dense filled single-line v-model="item.subjectId"> </v-select>
         </template>
         <template v-slot:item.debit="{ item }">
-          <v-text-field class="cus-v-input mr-2" dense filled single-line v-model.number="item.debit" type="number"> </v-text-field>
+          <v-text-field class="cus-v-input mr-2" dense filled single-line v-model.number="item.debit" type="number" :rules="[
+            v => v === 0 || !!v || 'This is required',
+          ]"> </v-text-field>
         </template>
         <template v-slot:item.credit="{ item }">
-          <v-text-field class="cus-v-input mr-2" dense filled single-line v-model.number="item.credit" type="number"> </v-text-field>
+          <v-text-field class="cus-v-input mr-2" dense filled single-line v-model.number="item.credit" type="number" :rules="[
+            v => v === 0 || !!v || 'This is required',
+          ]"> </v-text-field>
         </template>
 
         <template v-slot:item.action="{ item, index }">
@@ -40,6 +44,9 @@
       },
     },
     data: () => ({
+      requireRules: [
+      v => !!v || 'This is required',
+    ],
       headers: [
         { text: "摘要", value: "entry-abstract", width: 170 },
         { text: "会计科目", value: "subject-id", width: 120 },

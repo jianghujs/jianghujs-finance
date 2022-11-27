@@ -64,7 +64,7 @@ SQL END!-->
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
       <template v-slot:item.action="{ item }">
         <v-btn small class=" success" @click="doUiAction('startUpdateItem', {item})">修改</v-btn>
-        <v-btn small class=" error" @click="doUiAction('deleteItem', {item})">删除</v-btn>
+        <!-- <v-btn small class=" error" @click="doUiAction('deleteItem', {item})">删除</v-btn> -->
       </template>
     </v-data-table>
   </v-card>
@@ -206,9 +206,7 @@ new Vue({
     isTableLoading: true,
     tableDataFromBackend: [],
     headers: [
-      {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
-       
-      {text: "科目编码", value: "subjectId", width: 120}, 
+      {text: "科目编码", value: "subjectId", width: 120, class: 'fixed', cellClass: 'fixed'}, 
       {text: "科目名称", value: "subjectName", width: 120}, 
       {text: "科目分类", value: "subjectCategory", width: 120}, 
       {text: "科目余额方向", value: "subjectBalanceDirection", width: 120}, 
@@ -300,7 +298,7 @@ new Vue({
             actionData: {},
             where: {},
             whereIn: { subjectCategory },
-            orderBy: [{column: 'operationAt', order: 'desc'}]
+            orderBy: [{column: 'subjectId', order: 'desc'}]
           }
         }
       });

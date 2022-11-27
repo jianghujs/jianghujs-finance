@@ -39,7 +39,7 @@ SQL END!-->
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">新增</v-btn>
+        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">录入凭证</v-btn>
         <span class="body-2">共{{ tableData.length }}条记录</span>
       </v-col>
 
@@ -61,9 +61,12 @@ SQL END!-->
                   checkbox-color="success"
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
       <template v-slot:group.header="{items, isOpen, toggle, remove}">
-        <th colspan="2">
+        <th colspan="1">
           <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
-          <span class="text-subtitle-2">{{ items[0].voucherCreateAt }} 【{{ items[0].voucherId }}】</span>
+          <span class="text-subtitle-2">凭证号: {{ items[0].voucherId }}</span>
+        </th>
+        <th colspan="1">
+          <span class="text-subtitle-2">凭证时间: {{ items[0].voucherAt }}</span>
         </th>
       </template>
       <template v-slot:item.subject-name="{ item }">
@@ -73,11 +76,11 @@ SQL END!-->
   </v-card>
 </v-container>
 
-<!-- 新增 -->
+<!-- 录入凭证 -->
 <v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%" class="elevation-24">
   <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
     <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">新增信息</span>
+      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">录入凭证</span>
       <v-spacer></v-spacer>
       <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isAddDrawerShow = false">
         <v-icon dark>mdi-close</v-icon>
@@ -85,16 +88,23 @@ SQL END!-->
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
+
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计期间</span>
-        <v-select :rules="requireRules" :items="periodList" item-text="periodId" item-value="periodId" dense filled single-line v-model="addItem['periodId']"></v-select>
+        <span class="inputLabel">凭证字号</span>
+        <v-select :rules="requireRules" prefix="凭证字" 
+          :items="constantCollection.voucherName" dense filled single-line v-model="addItem['voucherName']"></v-select>
+        <v-text-field class="cus-v-input " 
+          prefix="凭证号" dense filled single-line 
+          append-outer-icon="mdi-refresh"
+          @click:append-outer="updateAddItemVoucherNumber"
+          v-model="addItem.voucherNumber" type="number"></v-text-field>
       </v-col>
-   
        
+
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证创建时间</span>
+        <span class="inputLabel">凭证时间</span>
         <v-menu
-          v-model="isVoucherCreateAtMenuShow"
+          v-model="isVoucherAtMenuShow"
           :close-on-content-click="false"
           :nudge-right="40"
           transition="scale-transition"
@@ -106,7 +116,7 @@ SQL END!-->
               :rules="requireRules"
               class="cus-v-input"
               dense filled single-line
-              v-model="addItem['voucherCreateAt']"
+              v-model="addItem['voucherAt']"
               label=""
               readonly
               v-bind="attrs"
@@ -114,12 +124,18 @@ SQL END!-->
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="addItem['voucherCreateAt']"
-            @input="isVoucherCreateAtMenuShow = false"
+            v-model="addItem['voucherAt']"
+            @input="isVoucherAtMenuShow = false"
           ></v-date-picker>
         </v-menu>
 
       </v-col>
+
+      <!-- <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+        <span class="inputLabel">会计期间</span>
+        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem.periodId" disabled="true"></v-text-field>
+      </v-col> -->
+
       <v-col cols="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">凭证条目</span>
         <voucher-management-entry v-model="voucherEntryList" :subject-list="subjectList" :rules="voucherEntryRules"/>
@@ -127,66 +143,12 @@ SQL END!-->
        
     </v-row>
     <v-row class="justify-end pr-6">
-      <v-btn color="success" @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">新增</v-btn>
+      <v-btn color="success" @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">确定</v-btn>
       <v-btn class="ml-2" @click="isAddDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
     </v-row>
   </v-form>
 </v-navigation-drawer>
 
-
-<!-- 编辑抽屉 -->
-<v-navigation-drawer v-model="isEditDrawerShow" :permanent="isEditDrawerShow" fixed temporary right width="80%" class="elevation-24">
-  <v-form v-model="isFormValid" v-if="isEditDrawerShow" ref="form" lazy-validation>
-    <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">编辑信息</span>
-      <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
-        <v-icon dark>mdi-close</v-icon>
-      </v-btn>
-    </v-row>
-    <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
-   
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计期间</span>
-        <v-select :items="periodList" item-text="periodId" item-value="periodId" dense filled single-line v-model="editItem['periodId']"></v-select>
-      </v-col>
-   
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证创建时间</span>
-        <v-menu
-          v-model="isVoucherCreateAtMenuShow"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              class="cus-v-input"
-              dense filled single-line
-              v-model="editItem['voucherCreateAt']"
-              label=""
-              readonly
-              v-bind="attrs"
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="addItem['voucherCreateAt']"
-            @input="isVoucherCreateAtMenuShow = false"
-          ></v-date-picker>
-        </v-menu>
-      </v-col>
-    </v-row>
-    <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-      <v-btn color="success" @click="doUiAction('updateItem')">保存</v-btn>
-      <v-btn class="ml-2" @click="isEditDrawerShow = false">取消</v-btn>
-    </v-row>
-  </v-form>
-</v-navigation-drawer>
 
 </jh-layout-v3>
 
@@ -210,6 +172,10 @@ new Vue({
       v => v.length > 0 || 'Name must be less than 10 characters',
     ],
     constantCollection: {
+      voucherName: [
+        { text: '记5432', value: '记5432' },
+        { text: '记5555', value: '记5555' },
+      ]
     },
 
     serverSearchInput: {
@@ -220,22 +186,21 @@ new Vue({
     isTableLoading: true,
     tableDataFromBackend: [],
     headers: [
-      {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
-       
      
+      {text: " ", value: "01", width: 100}, 
+      {text: " ", value: "01", width: 100}, 
+
       {text: "科目", value: "subject-name", width: 120}, 
       {text: "摘要", value: "entryAbstract", width: 120}, 
       {text: "借方金额", value: "debit", width: 80}, 
       {text: "贷方金额", value: "credit", width: 80}, 
     
-      {text: "操作者", value: "operationByUser", width: 120},
-      {text: "操作时间", value: "operationAt", width: 250},
+      // {text: "操作者", value: "operationByUser", width: 120},
+      // {text: "操作时间", value: "operationAt", width: 250},
     ],
-    isEditDrawerShow: false,
-    editItem: {},
     isAddDrawerShow: false,
     addItem: {},
-    isVoucherCreateAtMenuShow: false,
+    isVoucherAtMenuShow: false,
     periodList: [],
     subjectList: [],
     voucherEntryList: [],
@@ -254,7 +219,10 @@ new Vue({
       this.doUiAction('refreshTableData'),
       this.doUiAction('getPeriodList'),
       this.doUiAction('getSubjectList'),
+      // Tip: 测试代码
+      this.doUiAction('startCreateItem'),
     ])
+
   },
   mounted() {},
   methods: {
@@ -275,25 +243,10 @@ new Vue({
           break;
         case 'createItem':
           await this.prepareValidate();
+          await this.computePeriodId();
           await this.confirmCreateItemDialog();
           await this.doCreateItem();
           await this.closeDrawerShow();
-          await this.refreshTableData();
-          break;
-        case 'startUpdateItem':
-          await this.prepareItemData(uiActionData);
-          await this.openUpdateDialog();
-          break;
-        case 'updateItem':
-          await this.prepareValidate();
-          await this.confirmUpdateItemDialog();
-          await this.doUpdateItem();
-          await this.closeDrawerShow();
-          await this.refreshTableData();
-          break;
-        case 'deleteItem':
-          await this.confirmDeleteItemDialog();
-          await this.doDeleteItem(uiActionData);
           await this.refreshTableData();
           break;
         default:
@@ -378,13 +331,48 @@ new Vue({
      * description: ✅获取表格数据
     */
     async clearItemData() {
-      this.addItem = {};
+      this.addItem = {
+        // Tip: 测试
+        voucherName: this.constantCollection.voucherName[0].value,
+        voucherAt: dayjs().format("YYYY-MM-DD"),
+      };
       this.voucherEntryList = []
     },
+
+    
+    async updateAddItemVoucherNumber() {
+      if (!this.addItem.voucherName) {
+        this.addItem.voucherNumber = null;
+        return;
+      }
+      const result = await window.jianghuAxios({
+        data: {
+          appData: {
+            pageId: 'voucherManagement',
+            actionId: 'selectNextVoucherNumber',
+            actionData: { voucherName: this.addItem.voucherName },
+          }
+        }
+      });
+      const { voucherNumber } = result.data.appData.resultData;
+      // Bug: 为啥更新不上去?
+      this.addItem.voucherNumber = voucherNumber;
+    },
+
     async openCreateItemDialog() {
       this.isAddDrawerShow = true;
     },
 
+    async computePeriodId () {
+      const { voucherAt } = this.addItem;
+      const periodId = dayjs(voucherAt).format("YYYY-MM");
+
+      if (this.periodList.findIndex(p => p.periodId === periodId) === -1) {
+        window.vtoast.fail("凭证时间匹配不到会计期间!");
+        throw new Error("取消");
+      }
+      this.addItem.periodId = periodId;
+    },
     /**
      * uiActionId:  createItem
      * description: ✅获取表格数据
@@ -397,7 +385,7 @@ new Vue({
     async doCreateItem() {
       const { id, ...data } = this.addItem;
       const voucherEntryList = this.voucherEntryList
-
+      
       //判断借贷是否平衡
       const debitPrice = voucherEntryList.filter(item=> item.debit != 0)
       .reduce((prev, next)=> next.debit + prev, 0)
@@ -409,7 +397,7 @@ new Vue({
       }
 
 
-      await window.vtoast.loading("新增数据");
+      await window.vtoast.loading("录入凭证");
       const res = await Promise.all([
         window.jianghuAxios({
           data: {
@@ -425,72 +413,12 @@ new Vue({
         }),
       ])
       console.log('voucherManagement', res)
-      await window.vtoast.success("新增数据成功");
+      await window.vtoast.success("录入凭证成功");
     },
     async closeDrawerShow() {
-      this.isEditDrawerShow = false;
       this.isAddDrawerShow = false;
     },
 
-    /**
-     * uiActionId:  startUpdateItem
-     * description: ✅获取表格数据
-    */
-    async prepareItemData({item}) {
-      this.editItem = {...item};
-    },
-    async openUpdateDialog() {
-      this.isEditDrawerShow = true;
-    },
-    /**
-     * uiActionId:  updateItem
-     * description: ✅获取表格数据
-    */
-    async confirmUpdateItemDialog() {
-      if (await window.confirmDialog({title: "修改", content: "确定修改吗？"}) === false) {
-        throw new Error("取消");
-      }
-    },
-    async doUpdateItem() {
-      const { id, ...data } = this.editItem;
-      await window.vtoast.loading("修改数据");
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'voucherManagement',
-            actionId: 'updateItem',
-            actionData: data,
-            where: {id}
-          }
-        }
-      })
-      await window.vtoast.success("修改数据成功");
-    },
-
-    /**
-     * uiActionId:  deleteItem
-     * description: ✅获取表格数据
-    */
-    async confirmDeleteItemDialog() {
-      if (await window.confirmDialog({title: "删除", content: "确定删除吗？"}) === false) {
-        throw new Error("取消");
-      }
-    },
-    async doDeleteItem({item}) {
-      const { id } = item;
-      await window.vtoast.loading("删除数据");
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'voucherManagement',
-            actionId: 'deleteItem',
-            actionData: {},
-            where: { id: id }
-          }
-        }
-      });
-      await window.vtoast.success("删除数据成功");
-    },
   }
 })
 </script>
