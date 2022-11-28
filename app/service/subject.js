@@ -82,7 +82,7 @@ class SubjectService extends Service {
 
   async countSubjectGeneralLedger() {
     const { jianghuKnex } = this.app
-    const { rows } = this.ctx.response.body.appData.resultData;
+    const rows = await jianghuKnex(tableEnum.subject_balance).select();
     const { periodId } = this.ctx.request.body.appData.where;
 
     const total = {}
