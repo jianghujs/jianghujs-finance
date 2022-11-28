@@ -53,6 +53,7 @@
         <th colspan="2">
           <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
           <span class="text-subtitle-2">{{ items[0].subjectId }} 【{{ items[0].subjectName }}】</span>
+          <span class="ml-2">期末余额：{{subjectTotalBalance[items[0].subjectId]}}</span>
         </th>
       </template>
       <template v-slot:item.subject-name="{ item }">
@@ -100,7 +101,8 @@ new Vue({
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
     ],
-    periodList: []
+    periodList: [],
+    subjectTotalBalance: {}
   }),
   computed: {
     isMobile() {
@@ -153,9 +155,10 @@ new Vue({
         }
       });
       
-      const { rows } = result.data.appData.resultData;
+      const { rows, subjectTotalBalance } = result.data.appData.resultData;
 
       this.tableDataFromBackend = rows;
+      this.subjectTotalBalance = subjectTotalBalance
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================

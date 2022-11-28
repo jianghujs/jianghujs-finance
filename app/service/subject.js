@@ -74,6 +74,26 @@ class SubjectService extends Service {
     });
 
   }
+
+  /**
+   * 计算科目总账余额
+   * 期初，本期，期末
+   */
+  async countSubjectGeneralLedger() {
+    const { jianghuKnex } = this.app
+    const { rows } = this.ctx.response.body.appData.resultData;
+
+    const subjectTotalBalance = {}
+    rows.forEach(item=> {
+      if (!subjectTotalBalance[item.subjectId]) {
+        subjectTotalBalance[item.subjectId] = 0
+      }
+      subjectTotalBalance[item.subjectId] += (item.debit - item.credit)
+    })
+
+    this.ctx.response.body.appData.resultData.subjectTotalBalance = subjectTotalBalance
+  }
+
 }
 
 module.exports = SubjectService;
