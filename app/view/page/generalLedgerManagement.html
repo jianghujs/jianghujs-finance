@@ -53,7 +53,8 @@
         <th colspan="2">
           <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
           <span class="text-subtitle-2">{{ items[0].subjectId }} 【{{ items[0].subjectName }}】</span>
-          <span class="ml-2">期末余额：{{subjectTotalBalance[items[0].subjectId]}}</span>
+          <span class="ml-2">本期余额：{{subjectCurrentPeriodBalance[items[0].subjectId]}}</span>
+          <span class="ml-2">本年累计：{{subjectTotalBalance[items[0].subjectId]}}</span>
         </th>
       </template>
       <template v-slot:item.subject-name="{ item }">
@@ -102,7 +103,8 @@ new Vue({
       {text: "操作时间", value: "operationAt", width: 250},
     ],
     periodList: [],
-    subjectTotalBalance: {}
+    subjectTotalBalance: {},
+    subjectCurrentPeriodBalance: {}
   }),
   computed: {
     isMobile() {
@@ -114,10 +116,8 @@ new Vue({
   },
   watch: {},
   async created() {
-    await Promise.all([
-      this.doUiAction('refreshTableData'),
-      this.doUiAction('getPeriodList'),
-    ])
+    await this.doUiAction('getPeriodList')
+    await this.doUiAction('refreshTableData')
   },
   mounted() {},
   methods: {
@@ -155,10 +155,12 @@ new Vue({
         }
       });
       
-      const { rows, subjectTotalBalance } = result.data.appData.resultData;
+      const { rows, subjectTotalBalance, subjectCurrentPeriodBalance } = result.data.appData.resultData;
 
       this.tableDataFromBackend = rows;
       this.subjectTotalBalance = subjectTotalBalance
+      this.subjectCurrentPeriodBalance = subjectCurrentPeriodBalance
+
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
@@ -177,6 +179,7 @@ new Vue({
       const { rows } = result.data.appData.resultData;
 
       this.periodList = rows;
+      this.serverSearchInput.periodId = rows[0].periodId
     },
   }
 })

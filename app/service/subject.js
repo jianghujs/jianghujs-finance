@@ -79,19 +79,39 @@ class SubjectService extends Service {
    * 计算科目总账余额
    * 期初，本期，期末
    */
+ 
   async countSubjectGeneralLedger() {
     const { jianghuKnex } = this.app
     const { rows } = this.ctx.response.body.appData.resultData;
+    const { periodId } = this.ctx.request.body.appData.where;
 
-    const subjectTotalBalance = {}
+    const total = {}
+    const current = {}
     rows.forEach(item=> {
-      if (!subjectTotalBalance[item.subjectId]) {
-        subjectTotalBalance[item.subjectId] = 0
+      // 计算本期
+      if (!current[item.subjectId]) {
+        current[item.subjectId] = 0
       }
-      subjectTotalBalance[item.subjectId] += (item.debit - item.credit)
+      if (item.periodId == periodId) {
+        // current[item.subjectId].debit += item.debit
+        // current[item.subjectId].credit += item.credit
+        current[item.subjectId] += (item.debit - item.credit)
+      }
+
+      // 计算本年
+      if (!total[item.subjectId]) {
+        total[item.subjectId] = 0
+      }
+      // total[item.subjectId].debit += item.debit
+      // total[item.subjectId].credit += item.credit
+      total[item.subjectId] += (item.debit - item.credit)
     })
 
-    this.ctx.response.body.appData.resultData.subjectTotalBalance = subjectTotalBalance
+    this.ctx.response.body.appData.resultData = {
+      ...this.ctx.response.body.appData.resultData,
+      subjectTotalBalance: total,
+      subjectCurrentPeriodBalance: current
+    }
   }
 
 }
