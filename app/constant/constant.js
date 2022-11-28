@@ -26,6 +26,8 @@ module.exports = {
     subject_balance: 'subject_balance',
     profit_formula: 'profit_formula',
     // ========================高级 View============================
+    view01_voucher_entry: 'view01_voucher_entry',
+
   },
   subjectCategoryEnum: {
     zhican: '资产',

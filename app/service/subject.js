@@ -7,7 +7,7 @@ const actionDataScheme = Object.freeze({
   fillInsertItemParamsBeforeHook: {
     type: 'object',
     additionalProperties: true,
-    required: [ 'subjectCategory'],
+    required: ['subjectCategory'],
     properties: {
       subjectCategory: { type: 'string' },
     },
@@ -23,7 +23,7 @@ class SubjectService extends Service {
     const { subjectCategory } = actionData
 
     let startValue = 1000
-    switch(subjectCategory) {
+    switch (subjectCategory) {
       case subjectCategoryEnum.zhican:
         startValue = 1000;
         break;
@@ -44,17 +44,17 @@ class SubjectService extends Service {
     }
 
     const maxBizIdResult = await jianghuKnex(tableEnum.subject)
-    .where({ subjectCategory })
-    .max('subjectId', {
-      as: "maxBizId",
-    })
-    .first();
+      .where({ subjectCategory })
+      .max('subjectId', {
+        as: "maxBizId",
+      })
+      .first();
 
     let subjectId = null
     if (!maxBizIdResult.maxBizId) {
       subjectId = startValue;
     } else {
-      subjectId =  parseInt(maxBizIdResult.maxBizId) + 1;
+      subjectId = parseInt(maxBizIdResult.maxBizId) + 1;
     }
 
 
@@ -68,10 +68,10 @@ class SubjectService extends Service {
 
     // TODO 会计期间怎么获取？期初余额怎么设置
     await jianghuKnex(tableEnum.subject_balance)
-    .insert({
-      subjectId,
-      isPeriodStart: '是',
-    });
+      .insert({
+        subjectId,
+        isPeriodStart: '是',
+      });
 
   }
 
@@ -79,7 +79,7 @@ class SubjectService extends Service {
    * 计算科目总账余额
    * 期初，本期，期末
    */
- 
+
   async countSubjectGeneralLedger() {
     const { jianghuKnex } = this.app
     const { rows } = this.ctx.response.body.appData.resultData;
@@ -87,7 +87,7 @@ class SubjectService extends Service {
 
     const total = {}
     const current = {}
-    rows.forEach(item=> {
+    rows.forEach(item => {
       // 计算本期
       if (!current[item.subjectId]) {
         current[item.subjectId] = 0
@@ -114,6 +114,66 @@ class SubjectService extends Service {
     }
   }
 
+  /**
+   * 重新计算科目余额
+   * 1. 取所有会计期间，每个期间生成所有科目的数据
+   * 2. 取所有科目余额表，遍历
+   * 3. 根据科目id，和对应会计期间查对应的凭证，并进行借方和贷方++操作
+   * 
+   */
+  async countSubjectBalance() {
+    const { jianghuKnex, knex } = this.app
+    const periodList = await jianghuKnex(tableEnum.period).select()
+    const subjectList = await jianghuKnex(tableEnum.subject).select()
+
+    for (let i = 0; i < periodList.length; i++) {
+      for (let j = 0; j < subjectList.length; j++) {
+        const periodItem = periodList[i]
+        const subjectItem = subjectList[j]
+
+        // 先查查有没有对应科目余额
+        const firstSubjectBalance = await jianghuKnex(tableEnum.subject_balance)
+          .where({
+            periodId: periodItem.periodId,
+            subjectId: subjectItem.subjectId,
+          })
+          .select()
+          .first()
+
+        if (!firstSubjectBalance) {
+          await jianghuKnex(tableEnum.subject_balance, this.ctx).insert({
+            periodId: periodItem.periodId,
+            subjectId: subjectItem.subjectId,
+          })
+        } else {
+          
+        }
+
+        const voucherEntryList = await jianghuKnex(tableEnum.view01_voucher_entry).where({
+          periodId: periodItem.periodId,
+          subjectId: subjectItem.subjectId,
+        })
+          .select()
+
+        const debit = voucherEntryList.reduce((prev, next) => prev + next.debit, 0)
+        const credit = voucherEntryList.reduce((prev, next) => prev + next.credit, 0)
+
+        await jianghuKnex(tableEnum.subject_balance, this.ctx)
+          .where({
+            periodId: periodItem.periodId,
+            subjectId: subjectItem.subjectId,
+          })
+          .update({
+            debit,
+            credit,
+          })
+      }
+    }
+
+
+
+
+  }
 }
 
 module.exports = SubjectService;
