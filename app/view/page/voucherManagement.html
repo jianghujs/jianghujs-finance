@@ -18,8 +18,12 @@ SQL END!-->
 
 <jh-layout-v3>
 
-<!--   <template slot="serverSearch">
+  <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
+      <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+        <v-select prefix="会计期间" :items="periodList" item-text="periodId" item-value="periodId" hide-details dense filled v-model="serverSearchInput.periodId"></v-select>
+      </v-col>
+
       <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
         <v-btn
           class="elevation-0"
@@ -31,7 +35,7 @@ SQL END!-->
         </v-btn>
       </v-col>
     </v-row>
-  </template>-->
+  </template>
 
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
@@ -63,6 +67,7 @@ SQL END!-->
       <template v-slot:group.header="{items, isOpen, toggle, remove}">
         <th colspan="1">
           <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+          <span class="text-subtitle-2">{{ items[0].periodId }} </span>
           <span class="text-subtitle-2">凭证号: {{ items[0].voucherId }}</span>
         </th>
         <th colspan="1">
@@ -179,16 +184,15 @@ new Vue({
     },
 
     serverSearchInput: {
-      studentId: null,
-      classId: null
+      periodId: null,
     },
     searchInput: null,
     isTableLoading: true,
     tableDataFromBackend: [],
     headers: [
      
-      {text: " ", value: "01", width: 100}, 
-      {text: " ", value: "01", width: 100}, 
+      {text: " ", value: "01", width: 50}, 
+      {text: " ", value: "01", width: 50}, 
 
       {text: "科目", value: "subject-name", width: 120}, 
       {text: "摘要", value: "entryAbstract", width: 120}, 
@@ -279,8 +283,7 @@ new Vue({
             pageId: 'voucherManagement',
             actionId: 'selectItemList',
             actionData: {},
-            where: {},
-            whereLike: serverSearchInput,
+            where: serverSearchInput,
             orderBy: [{column: 'operationAt', order: 'desc'}]
           }
         }

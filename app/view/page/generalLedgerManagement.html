@@ -6,6 +6,10 @@
 
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
+      <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+        <v-select prefix="会计期间" :items="periodList" item-text="periodId" item-value="periodId" hide-details dense filled v-model="serverSearchInput.periodId"></v-select>
+      </v-col>
+
       <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
         <v-btn
           class="elevation-0"
@@ -78,8 +82,7 @@ new Vue({
     constantCollection: {
     },
     serverSearchInput: {
-      studentId: null,
-      classId: null
+      periodId: null,
     },
     searchInput: null,
     isTableLoading: true,
@@ -97,6 +100,7 @@ new Vue({
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
     ],
+    periodList: []
   }),
   computed: {
     isMobile() {
@@ -108,7 +112,10 @@ new Vue({
   },
   watch: {},
   async created() {
-    await this.doUiAction('refreshTableData')
+    await Promise.all([
+      this.doUiAction('refreshTableData'),
+      this.doUiAction('getPeriodList'),
+    ])
   },
   mounted() {},
   methods: {
@@ -116,6 +123,9 @@ new Vue({
       switch (uiActionId) {
         case 'refreshTableData':
           await this.refreshTableData();
+          break;
+        case 'getPeriodList':
+          await this.getPeriodList();
           break;
         default:
           console.error("[doUiAction] uiActionId not find", { uiActionId });
@@ -137,8 +147,7 @@ new Vue({
             pageId: 'generalLedgerManagement',
             actionId: 'selectItemList',
             actionData: {},
-            where: {},
-            whereLike: serverSearchInput,
+            where: serverSearchInput,
             orderBy: [{column: 'operationAt', order: 'desc'}]
           }
         }
@@ -150,7 +159,22 @@ new Vue({
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
-   
+    async getPeriodList() {
+      const result = await window.jianghuAxios({
+        data: {
+          appData: {
+            pageId: 'voucherManagement',
+            actionId: 'selectPeriodList',
+            actionData: {},
+            where: {},
+            orderBy: [{column: 'operationAt', order: 'desc'}]
+          }
+        }
+      });
+      const { rows } = result.data.appData.resultData;
+
+      this.periodList = rows;
+    },
   }
 })
 </script>
