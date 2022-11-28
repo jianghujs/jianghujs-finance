@@ -57,23 +57,30 @@ SQL END!-->
                   :headers="headers"
                   :items="tableData"
                   :search="searchInput"
-                  group-by="voucherId"
                   :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
                   :items-per-page="20"
                   mobile-breakpoint="0"
                   :loading="isTableLoading"
+                  group-by="operationAt"
                   checkbox-color="success"
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+
       <template v-slot:group.header="{items, isOpen, toggle, remove}">
-        <th colspan="1">
+        <th>
           <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
           <span class="text-subtitle-2">{{ items[0].periodId }} </span>
-          <span class="text-subtitle-2">凭证号: {{ items[0].voucherId }}</span>
+          <span class="text-subtitle-2">{{ items[0].voucherId }}</span>
         </th>
-        <th colspan="1">
-          <span class="text-subtitle-2">凭证时间: {{ items[0].voucherAt }}</span>
+        <th>
+          <span class="text-subtitle-2"> {{ items[0].voucherAt }}</span>
         </th>
       </template>
+      <template v-slot:item.voucher-id="{ item }">
+        <div style="opacity: 0;">{{item.voucherId}}</div>
+       </template>
+       <template v-slot:item.voucher-at="{ item }">
+        <div style="opacity: 0;">{{item.voucherAt}}</div>
+       </template>
       <template v-slot:item.subject-name="{ item }">
        {{item.subjectId}} {{item.subjectName}}
       </template>
@@ -191,8 +198,8 @@ new Vue({
     tableDataFromBackend: [],
     headers: [
      
-      {text: " ", value: "01", width: 50}, 
-      {text: " ", value: "01", width: 50}, 
+      {text: "凭证号", value: "voucherId", width: 50}, 
+      {text: "凭证时间", value: "voucherAt", width: 50}, 
 
       {text: "科目", value: "subject-name", width: 120}, 
       {text: "摘要", value: "entryAbstract", width: 120}, 
@@ -358,8 +365,11 @@ new Vue({
         }
       });
       const { voucherNumber } = result.data.appData.resultData;
-      // Bug: 为啥更新不上去?
-      this.addItem.voucherNumber = voucherNumber;
+      // Bug: 为啥更新不上去? 因为vue的更新机制，只有预先定义在data中的数据才有响应式更新
+      this.addItem = {
+        ...this.addItem,
+        voucherNumber: voucherNumber
+      };
     },
 
     async openCreateItemDialog() {
