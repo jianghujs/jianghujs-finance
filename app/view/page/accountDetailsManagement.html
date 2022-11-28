@@ -35,11 +35,11 @@
             clearable
             clear-icon="mdi-close-circle-outline"
           ></v-text-field>
-          <v-checkbox
+          <!-- <v-checkbox
             v-model="caseSensitive"
             hide-details
             label="是否区分大小写"
-          ></v-checkbox>
+          ></v-checkbox> -->
         </v-sheet>
 
         <v-treeview
@@ -126,14 +126,12 @@ new Vue({
     isTableLoading: true,
     tableDataFromBackend: [],
     headers: [
-      {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
-       
-      {text: "会计期间", value: "periodId", width: 120}, 
-      {text: "凭证字", value: "voucherName", width: 120}, 
-      {text: "凭证Id", value: "voucherId", width: 120}, 
+      {text: "凭证字号", value: "voucherId", width: 120, class: 'fixed', cellClass: 'fixed'}, 
+      {text: "会计期间", value: "periodId", width: 120, class: 'fixed', cellClass: 'fixed'}, 
+      // {text: "凭证字", value: "voucherName", width: 120}, 
       {text: "借方金额", value: "debit", width: 80}, 
       {text: "贷方金额", value: "credit", width: 80}, 
-      {text: "凭证创建时间", value: "voucherCreateAt", width: 120}, 
+      {text: "凭证时间", value: "voucherAt", width: 120}, 
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
     ],
