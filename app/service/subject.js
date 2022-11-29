@@ -202,7 +202,7 @@ class SubjectService extends Service {
       item.endOfTermBalance = 0
       
       for (let j=0; j < currentFormulaList.length; j++) {
-        const entry = entryList.filter(entryItem=> currentFormulaList[i].subjectId == entryItem.subjectId)[0]
+        const entry = entryList.filter(entryItem=> currentFormulaList[j].subjectId == entryItem.subjectId)[0]
         if (entry) {
           item.endOfTermBalance += (entry.debit - entry.credit)
         }
