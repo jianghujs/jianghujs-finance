@@ -187,22 +187,26 @@ class SubjectService extends Service {
     const { jianghuKnex, knex } = this.app
 
     const { rows } = this.ctx.response.body.appData.resultData;
+
+    const [formulaList, entryList] = await Promise.all([
+      jianghuKnex(tableEnum.profit_formula).select(),
+      jianghuKnex(tableEnum.subject_balance).select(),
+    ])
+   
   
 
     for (let i=0; i < rows.length; i++) {
       const item = rows[i]
-      const formulaList = await jianghuKnex(tableEnum.profit_formula).where({
-        balanceSheetId: item.balanceSheetId
-      }).select()
+      const currentFormulaList = formulaList.filter(formulaItem=> formulaItem.balanceSheetId == item.balanceSheetId)
 
       item.endOfTermBalance = 0
       
-      for (let j=0; j < formulaList.length; j++) {
-        const entry = await jianghuKnex(tableEnum.subject_balance).where({
-          subjectId: formulaList[i].subjectId
-        }).select().first()
+      for (let j=0; j < currentFormulaList.length; j++) {
+        const entry = entryList.filter(entryItem=> currentFormulaList[i].subjectId == entryItem.subjectId)[0]
+        if (entry) {
+          item.endOfTermBalance += (entry.debit - entry.credit)
+        }
 
-        item.endOfTermBalance += (entry.debit - entry.credit)
       }
     }
 
