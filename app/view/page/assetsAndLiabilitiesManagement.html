@@ -39,7 +39,10 @@
         </v-col>
       </v-row>
       <v-data-table fixed-header :headers="headers" :items="tableData" :search="searchInput"
-        :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="20" mobile-breakpoint="0"
+        :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="-1"
+        mobile-breakpoint="0"
+        sort-by="profitFormulaCount"
+        :sort-desc="true"
         :loading="isTableLoading" checkbox-color="success"
         class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
         <template v-slot:item.action="{ item }">
@@ -68,7 +71,7 @@
       
       <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
         <v-btn class="ml-2" color="success" @click="doUiAction('doSubmitFormula')">提交</v-btn>
-        <v-btn class="ml-2" @click="isEditDrawerShow = false">取消</v-btn>
+        <v-btn class="ml-2" @click="isAddDrawerShow = false">取消</v-btn>
       </v-row>
     </v-form>
 
@@ -105,7 +108,7 @@
       editItem: {},
       headers: [
         { text: "资产/负债", value: "balanceSheetId", width: 120 },
-        { text: "公式数量", value: "formulaNumber", width: 80 },
+        { text: "公式数量", value: "profitFormulaCount", width: 80 },
         { text: "期末数", value: "endOfTermBalance", width: 80 },
         { text: "年初数", value: "credit", width: 80 },
         { text: '操作', value: 'action', class: 'fixed', cellClass: 'fixed' },
