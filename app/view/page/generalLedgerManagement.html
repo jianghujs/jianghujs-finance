@@ -39,27 +39,17 @@
       </v-col>
     </v-row>
     <v-data-table fixed-header
-                  :headers="headers"
-                  :items="tableData"
-                  :search="searchInput"
-                  group-by="subjectId"
-                  :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
-                  :items-per-page="20"
-                  mobile-breakpoint="0"
-                  :loading="isTableLoading"
-                  checkbox-color="success"
-                  class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-      <template v-slot:group.header="{items, isOpen, toggle, remove}">
-        <th colspan="2">
-          <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
-          <span class="text-subtitle-2">{{ items[0].subjectId }} 【{{ items[0].subjectName }}】</span>
-          <span class="ml-2">本期余额：{{subjectCurrentPeriodBalance[items[0].subjectId]}}</span>
-          <span class="ml-2">本年累计：{{subjectTotalBalance[items[0].subjectId]}}</span>
-        </th>
-      </template>
-      <template v-slot:item.subject-name="{ item }">
-       {{item.subjectId}} {{item.subjectName}}
-      </template>
+      :headers="headers"
+      :items="tableData"
+      :search="searchInput"
+      sort-by="subjectId"
+      :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
+      :items-per-page="20"
+      mobile-breakpoint="0"
+      :loading="isTableLoading"
+      checkbox-color="success"
+      class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+      
     </v-data-table>
   </v-card>
 </v-container>
@@ -93,18 +83,20 @@ new Vue({
       // {text: "ID", value: "id", width: 120, class: 'fixed', cellClass: 'fixed'},
        
      
-      {text: "会计期间", value: "periodId", width: 120}, 
-      {text: "摘要", value: "entryAbstract", width: 120}, 
+      {text: "科目编码", value: "subjectId", width: 50}, 
+      {text: "科目名称", value: "subjectName", width: 120}, 
+      {text: "会计期间", value: "periodId", width: 80}, 
+      // {text: "摘要", value: "entryAbstract", width: 120}, 
       {text: "借方金额", value: "debit", width: 80}, 
       {text: "贷方金额", value: "credit", width: 80}, 
+      {text: "本期合计", value: "currentPeriodBalance", width: 80}, 
+      {text: "本年累计", value: "totalBalance", width: 80}, 
       {text: "方向", value: "subjectBalanceDirection", width: 80}, 
     
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
     ],
     periodList: [],
-    subjectTotalBalance: {},
-    subjectCurrentPeriodBalance: {}
   }),
   computed: {
     isMobile() {
@@ -150,16 +142,14 @@ new Vue({
             actionId: 'selectItemList',
             actionData: {},
             where: serverSearchInput,
-            orderBy: [{column: 'operationAt', order: 'desc'}]
           }
         }
       });
       
-      const { rows, subjectTotalBalance, subjectCurrentPeriodBalance } = result.data.appData.resultData;
+      const { rows } = result.data.appData.resultData;
 
       this.tableDataFromBackend = rows;
-      this.subjectTotalBalance = subjectTotalBalance
-      this.subjectCurrentPeriodBalance = subjectCurrentPeriodBalance
+    
 
       this.isTableLoading = false;
     },

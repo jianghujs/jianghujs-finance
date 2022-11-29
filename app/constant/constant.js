@@ -28,6 +28,7 @@ module.exports = {
     // ========================高级 View============================
     view01_voucher_entry: 'view01_voucher_entry',
     view01_balance_sheet: 'view01_balance_sheet',
+    view01_subject_balance: 'view01_subject_balance',
 
   },
   subjectCategoryEnum: {

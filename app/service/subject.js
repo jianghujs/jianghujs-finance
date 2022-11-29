@@ -82,7 +82,7 @@ class SubjectService extends Service {
 
   async countSubjectGeneralLedger() {
     const { jianghuKnex } = this.app
-    const rows = await jianghuKnex(tableEnum.subject_balance).select();
+    const rows = await jianghuKnex(tableEnum.view01_subject_balance).select();
     const { periodId } = this.ctx.request.body.appData.where;
 
     const total = {}
@@ -90,27 +90,21 @@ class SubjectService extends Service {
     rows.forEach(item => {
       // 计算本期
       if (!current[item.subjectId]) {
-        current[item.subjectId] = 0
+        item.currentPeriodBalance = 0
       }
       if (item.periodId == periodId) {
-        // current[item.subjectId].debit += item.debit
-        // current[item.subjectId].credit += item.credit
-        current[item.subjectId] += (item.debit - item.credit)
+        item.currentPeriodBalance += (item.debit - item.credit)
       }
 
       // 计算本年
       if (!total[item.subjectId]) {
-        total[item.subjectId] = 0
+        item.totalBalance = 0
       }
-      // total[item.subjectId].debit += item.debit
-      // total[item.subjectId].credit += item.credit
-      total[item.subjectId] += (item.debit - item.credit)
+      item.totalBalance += (item.debit - item.credit)
     })
 
     this.ctx.response.body.appData.resultData = {
-      ...this.ctx.response.body.appData.resultData,
-      subjectTotalBalance: total,
-      subjectCurrentPeriodBalance: current
+      rows: rows.filter(item=> item.periodId == periodId)
     }
   }
 
@@ -183,37 +177,37 @@ class SubjectService extends Service {
    * 
    * TODO 应该用mysql来做，这样性能太差
    */
-  async countAssetAndLiabilityAfterHook() {
-    const { jianghuKnex, knex } = this.app
+  // async countAssetAndLiabilityAfterHook() {
+  //   const { jianghuKnex, knex } = this.app
 
-    const { rows } = this.ctx.response.body.appData.resultData;
+  //   const { rows } = this.ctx.response.body.appData.resultData;
 
-    const [formulaList, entryList] = await Promise.all([
-      jianghuKnex(tableEnum.profit_formula).select(),
-      jianghuKnex(tableEnum.subject_balance).select(),
-    ])
+  //   const [formulaList, entryList] = await Promise.all([
+  //     jianghuKnex(tableEnum.profit_formula).select(),
+  //     jianghuKnex(tableEnum.subject_balance).select(),
+  //   ])
    
   
 
-    for (let i=0; i < rows.length; i++) {
-      const item = rows[i]
-      const currentFormulaList = formulaList.filter(formulaItem=> formulaItem.balanceSheetId == item.balanceSheetId)
+  //   for (let i=0; i < rows.length; i++) {
+  //     const item = rows[i]
+  //     const currentFormulaList = formulaList.filter(formulaItem=> formulaItem.balanceSheetId == item.balanceSheetId)
 
-      item.endOfTermBalance = 0
+  //     item.endOfTermBalance = 0
       
-      for (let j=0; j < currentFormulaList.length; j++) {
-        const entry = entryList.filter(entryItem=> currentFormulaList[j].subjectId == entryItem.subjectId)[0]
-        if (entry) {
-          item.endOfTermBalance += (entry.debit - entry.credit)
-        }
+  //     for (let j=0; j < currentFormulaList.length; j++) {
+  //       const entry = entryList.filter(entryItem=> currentFormulaList[j].subjectId == entryItem.subjectId)[0]
+  //       if (entry) {
+  //         item.endOfTermBalance += (entry.debit - entry.credit)
+  //       }
 
-      }
-    }
+  //     }
+  //   }
 
-    this.ctx.request.body.appData.resultData = {
-      rows
-    }
-  }
+  //   this.ctx.request.body.appData.resultData = {
+  //     rows
+  //   }
+  // }
 }
 
 module.exports = SubjectService;
