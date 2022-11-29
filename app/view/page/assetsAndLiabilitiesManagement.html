@@ -63,12 +63,14 @@
         <v-icon dark>mdi-close</v-icon>
       </v-btn>
     </v-row>
-    <assets-and-liabilities-management-formula v-model="formulaList" :subjectList="subjectList" :loadingFormulaList="loadingFormulaList" />
-    
-    <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-      <v-btn class="ml-2" color="success" @click="doUiAction('doSubmitFormula')">提交</v-btn>
-      <v-btn class="ml-2" @click="isEditDrawerShow = false">取消</v-btn>
-    </v-row>
+    <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
+      <assets-and-liabilities-management-formula v-model="formulaList" :subjectList="subjectList" :loadingFormulaList="loadingFormulaList" @doDeleteItem="doUiAction('doDeleteFormulaItem', { item: $event})" />
+      
+      <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
+        <v-btn class="ml-2" color="success" @click="doUiAction('doSubmitFormula')">提交</v-btn>
+        <v-btn class="ml-2" @click="isEditDrawerShow = false">取消</v-btn>
+      </v-row>
+    </v-form>
 
   </v-navigation-drawer>
 </jh-layout-v3>
@@ -100,8 +102,10 @@
       searchInput: null,
       isTableLoading: true,
       tableDataFromBackend: [],
+      editItem: {},
       headers: [
         { text: "资产/负债", value: "balanceSheetId", width: 120 },
+        { text: "公式数量", value: "formulaNumber", width: 80 },
         { text: "期末数", value: "debit", width: 80 },
         { text: "年初数", value: "credit", width: 80 },
         { text: '操作', value: 'action', class: 'fixed', cellClass: 'fixed' },
@@ -138,19 +142,35 @@
             await this.getSubjectList();
             break;
           case 'startAddFormula':
-            await this.startAddFormula();
+            await this.startAddFormula(uiActionData);
             await this.getFormulaList(uiActionData);
             break;
           case 'doSubmitFormula':
+            await this.prepareValidate();
             await this.doSubmitFormula();
+            await this.refreshTableData();
+            
+            break;
+          case 'doDeleteFormulaItem':
+            await this.doDeleteFormulaItem(uiActionData);
+            await this.getFormulaList();
             break;
           default:
             console.error("[doUiAction] uiActionId not find", { uiActionId });
             break;
         }
       },
-      async startAddFormula() {
+      async startAddFormula({ item }) {
+        this.formulaList = []
         this.isAddDrawerShow = true
+        this.editItem = item
+      },
+
+      async prepareValidate() {
+        if (this.$refs.form.validate() === false) {
+          window.vtoast.fail({ message: "输入有误, 请检查!" });
+          throw new Error("[prepareValidate] false");
+        }
       },
 
       /**
@@ -197,13 +217,14 @@
 
       async getFormulaList({ item }) {
         this.loadingFormulaList = true
+        const { balanceSheetId } = this.editItem
         const result = await window.jianghuAxios({
           data: {
             appData: {
               pageId: 'assetsAndLiabilitiesManagement',
               actionId: 'selectFormulaList',
               actionData: {},
-              where: {balanceSheetId: item.balanceSheetId},
+              where: {balanceSheetId},
               orderBy: [{column: 'operationAt', order: 'desc'}]
             }
           }
@@ -211,28 +232,49 @@
         this.loadingFormulaList = false
         const { rows } = result.data.appData.resultData;
 
-        this.subjectList = rows;
+        this.formulaList = rows;
       },
       async doSubmitFormula() {
-        const formulaList = this.formulaList
+        const formulaList = this.formulaList.filter(item=> !item.id)
+        const { balanceSheetId } = this.editItem
         const formulaListPromise = []
 
-        formulaList.forEach(item=> {
-          formulaListPromise.push(
-            window.jianghuAxios({
-              data: {
-                appData: {
-                  pageId: 'assetsAndLiabilitiesManagement',
-                  actionId: 'insertFormulaItem',
-                  actionData: item,
-                }
-              }
-            })
-          )
-        })
 
-        await Promise.all(formulaListPromise);
+        window.vtoast.loading(`正在新增`);
+        for (let i = 0; i < formulaList.length; i++) {
+          const item = formulaList[i];
+          formulaListPromise.push(window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'assetsAndLiabilitiesManagement',
+                actionId: 'insertFormulaItem',
+                actionData: {
+                  balanceSheetId,
+                  subjectId: item.subjectId,
+                  countDirection: item.countDirection,
+                  accessRule: item.accessRule
+                },
+              }
+            }
+          }))
+        }
+        await Promise.all(formulaListPromise)
+
         this.isAddDrawerShow = false
+        window.vtoast.success("批量新增成功");
+      },
+      async doDeleteFormulaItem({ item }) {
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'assetsAndLiabilitiesManagement',
+              actionId: 'deleteFormulaItem',
+              actionData: {
+                id: item.id,
+              },
+            }
+          }
+        })
       }
     }
   })

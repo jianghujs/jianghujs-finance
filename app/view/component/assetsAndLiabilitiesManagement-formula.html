@@ -5,13 +5,13 @@
         class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
        
         <template v-slot:item.subject-id="{ item }">
-          <v-select :items="subjectList" item-text="subjectName" item-value="subjectId" class="cus-v-input mr-2" dense filled single-line v-model="item.subjectId"> </v-select>
+          <v-select :rules="requireRules" :items="subjectList" item-text="subjectName" item-value="subjectId" class="cus-v-input mr-2" dense filled single-line v-model="item.subjectId"> </v-select>
         </template>
         <template v-slot:item.count-direction="{ item }">
-          <v-select :items="['+', '-']" class="cus-v-input mr-2" dense filled single-line v-model="item.countDirection"> </v-select>
+          <v-select :rules="requireRules" :items="['+', '-']" class="cus-v-input mr-2" dense filled single-line v-model="item.countDirection"> </v-select>
         </template>
         <template v-slot:item.access-rule="{ item }">
-          <v-select :items="['余额', '借方余额', '贷方余额', '科目借方余额', '科目借方余额']" class="cus-v-input mr-2" dense filled single-line v-model="item.accessRule"> </v-select>
+          <v-select :items="['余额', '借方余额', '贷方余额', '科目借方余额', '科目借方余额']" :rules="requireRules" class="cus-v-input mr-2" dense filled single-line v-model="item.accessRule"> </v-select>
         </template>
 
         <template v-slot:item.action="{ item, index }">
@@ -41,6 +41,9 @@
       },
     },
     data: () => ({
+      requireRules: [
+        v => !!v || 'This is required',
+      ],
       headers: [
         { text: "科目", value: "subject-id", width: 80 },
         { text: "运算符号", value: "count-direction", width: 40 },
@@ -79,11 +82,12 @@
       async doAddItem() {
         this.$emit("input", [...this.value, { entryAbstract: null, subjectId: null, debit: 0, credit: 0 }]);
       },
-      async doDeleteItem({index}) {
+      async doDeleteItem({index, item}) {
         let list = _.cloneDeep(this.value);
         list.splice(index, 1);
         this.$emit("input", list);
         this.$emit("change", list);
+        this.$emit("doDeleteItem", item)
       },
     }
   })
