@@ -50,7 +50,7 @@ class VoucherService extends Service {
 
   // 创建凭证和凭证条目
   async createVoucherAndVoucherEntry() {
-    const { jianghuKnex } = this.app
+    const { jianghuKnex, knex } = this.app
     const { username } = this.ctx.userInfo;
     const { actionData } = this.ctx.request.body.appData
     validateUtil.validate(actionDataScheme.createVoucherAndVoucherEntry, actionData);
@@ -62,7 +62,7 @@ class VoucherService extends Service {
       throw new BizError(errorInfoEnum.voucherId_exist);
     }
 
-    await jianghuKnex.transaction(async trx => {
+    await knex.transaction(async trx => {
       await trx(tableEnum.voucher).insert({
         voucherId, voucherName, voucherNumber,
         periodId, voucherAt, voucherAccountant: username
@@ -74,6 +74,19 @@ class VoucherService extends Service {
       await trx(tableEnum.voucher_entry).insert(voucherEntryList);
 
       // TODO: 触发更新科目余额
+      for (let i = 0; i < voucherEntryList.length; i++) {
+        await trx(tableEnum.subject_balance)
+        .where({
+          periodId,
+          subjectId: voucherEntryList[i].subjectId,
+        })
+        .increment({
+          credit: voucherEntryList[i].credit,
+          debit: voucherEntryList[i].debit,
+        });
+      }
+      
+
     });
   }
 }

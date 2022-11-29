@@ -27,6 +27,7 @@ module.exports = {
     profit_formula: 'profit_formula',
     // ========================高级 View============================
     view01_voucher_entry: 'view01_voucher_entry',
+    view01_balance_sheet: 'view01_balance_sheet',
 
   },
   subjectCategoryEnum: {

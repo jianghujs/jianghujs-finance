@@ -174,6 +174,42 @@ class SubjectService extends Service {
 
 
   }
+
+  /**
+   * 资产负债期末数计算
+   * 1. 取出资产负债列表
+   * 2. 取对应的公式，遍历其科目的凭证，进行公式符号的计算
+   * 3. 在资产负债项中加入计算后期末数
+   * 
+   * TODO 应该用mysql来做，这样性能太差
+   */
+  async countAssetAndLiabilityAfterHook() {
+    const { jianghuKnex, knex } = this.app
+
+    const { rows } = this.ctx.response.body.appData.resultData;
+  
+
+    for (let i=0; i < rows.length; i++) {
+      const item = rows[i]
+      const formulaList = await jianghuKnex(tableEnum.profit_formula).where({
+        balanceSheetId: item.balanceSheetId
+      }).select()
+
+      item.endOfTermBalance = 0
+      
+      for (let j=0; j < formulaList.length; j++) {
+        const entry = await jianghuKnex(tableEnum.subject_balance).where({
+          subjectId: formulaList[i].subjectId
+        }).select().first()
+
+        item.endOfTermBalance += (entry.debit - entry.credit)
+      }
+    }
+
+    this.ctx.request.body.appData.resultData = {
+      rows
+    }
+  }
 }
 
 module.exports = SubjectService;
