@@ -3,7 +3,7 @@
 {% block vue_template %}
 
 <jh-layout-v3>
-
+<!-- 
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}"
       style="justify-content: end">
@@ -18,40 +18,77 @@
         </v-btn>
       </v-col>
     </v-row>
-  </template>
+  </template> -->
 
   <!-- 页面主要内容 -->
   <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
 
-    <v-card>
-      <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 "
-        :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
-
-        <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-          <span class="body-2">共{{ tableData.length }}条记录</span>
-        </v-col>
-
-        <v-spacer></v-spacer>
-
-        <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
-          <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line>
-          </v-text-field>
-        </v-col>
-      </v-row>
-      <v-data-table fixed-header :headers="headers" :items="tableData" :search="searchInput"
-        :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="-1"
-        mobile-breakpoint="0"
-        sort-by="profitFormulaCount"
-        :sort-desc="true"
-        :loading="isTableLoading" checkbox-color="success"
-        class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-        <template v-slot:item.action="{ item }">
-          <v-icon small @click="doUiAction('startAddFormula', {item})">
-            mdi-clipboard-edit-outline
-          </v-icon>
-        </template>
-      </v-data-table>
-    </v-card>
+    <v-row>
+      <v-col cols="6">
+        <v-card>
+          <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 "
+            :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+    
+            <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
+              <span class="text-h6">资产</span>
+              <span class="body-2">共{{ assetData.length }}条记录</span>
+            </v-col>
+    
+            <v-spacer></v-spacer>
+    
+            <v-col cols="12" xs="6" sm="6" md="4" xl="4" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+              <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line>
+              </v-text-field>
+            </v-col>
+          </v-row>
+          <v-data-table fixed-header :headers="headers" :items="assetData" :search="searchInput"
+            :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="-1"
+            mobile-breakpoint="0"
+            sort-by="profitFormulaCount"
+            :sort-desc="true"
+            :loading="isTableLoading" checkbox-color="success"
+            class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+            <template v-slot:item.action="{ item }">
+              <v-icon small @click="doUiAction('startAddFormula', {item})">
+                mdi-clipboard-edit-outline
+              </v-icon>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+      <v-col cols="6">
+        <v-card>
+          <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 "
+            :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+    
+            <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
+              <span class="text-h6">负债</span>
+              <span class="body-2">共{{ liabilitiesData.length }}条记录</span>
+            </v-col>
+    
+            <v-spacer></v-spacer>
+    
+            <v-col cols="12" xs="6" sm="6" md="4" xl="4" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+              <v-text-field v-model="liabilitiesSearchInput" label="表格过滤" class="cus-v-input" dense filled single-line>
+              </v-text-field>
+            </v-col>
+          </v-row>
+          <v-data-table fixed-header :headers="headers" :items="liabilitiesData" :search="liabilitiesSearchInput"
+            :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="-1"
+            mobile-breakpoint="0"
+            sort-by="profitFormulaCount"
+            :sort-desc="true"
+            :loading="isTableLoading" checkbox-color="success"
+            class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+            <template v-slot:item.action="{ item }">
+              <v-icon small @click="doUiAction('startAddFormula', {item})">
+                mdi-clipboard-edit-outline
+              </v-icon>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
 
 
   </v-container>
@@ -103,11 +140,12 @@
         direction: ['借', '贷'],
       },
       searchInput: null,
+      liabilitiesSearchInput: null,
       isTableLoading: true,
       tableDataFromBackend: [],
       editItem: {},
       headers: [
-        { text: "资产/负债", value: "balanceSheetId", width: 120 },
+        { text: "项目", value: "balanceSheetId", width: 250 },
         { text: "公式数量", value: "profitFormulaCount", width: 80 },
         { text: "期末数", value: "endOfTermBalance", width: 80 },
         { text: "年初数", value: "credit", width: 80 },
@@ -125,6 +163,12 @@
       },
       tableData() {
         return this.tableDataFromBackend;
+      },
+      assetData() {
+        return this.tableData.filter(item=> item.direction === '借')
+      },
+      liabilitiesData() {
+        return this.tableData.filter(item=> item.direction === '贷')
       }
     },
     watch: {},
