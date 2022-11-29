@@ -63,8 +63,13 @@
         <v-icon dark>mdi-close</v-icon>
       </v-btn>
     </v-row>
-    <assets-and-liabilities-management-formula v-model="formulaList" :subjectList="subjectList" />
+    <assets-and-liabilities-management-formula v-model="formulaList" :subjectList="subjectList" :loadingFormulaList="loadingFormulaList" />
     
+    <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
+      <v-btn class="ml-2" color="success" @click="doUiAction('doSubmitFormula')">提交</v-btn>
+      <v-btn class="ml-2" @click="isEditDrawerShow = false">取消</v-btn>
+    </v-row>
+
   </v-navigation-drawer>
 </jh-layout-v3>
 
@@ -96,15 +101,15 @@
       isTableLoading: true,
       tableDataFromBackend: [],
       headers: [
-        { text: "资产/负债", value: "item", width: 120 },
-        { text: "行次", value: "row", width: 120 },
+        { text: "资产/负债", value: "balanceSheetId", width: 120 },
         { text: "期末数", value: "debit", width: 80 },
         { text: "年初数", value: "credit", width: 80 },
         { text: '操作', value: 'action', class: 'fixed', cellClass: 'fixed' },
       ],
       isAddDrawerShow: false,
       subjectList: [],
-      formulaList: []
+      formulaList: [],
+      loadingFormulaList: false,
 
     }),
     computed: {
@@ -134,6 +139,10 @@
             break;
           case 'startAddFormula':
             await this.startAddFormula();
+            await this.getFormulaList(uiActionData);
+            break;
+          case 'doSubmitFormula':
+            await this.doSubmitFormula();
             break;
           default:
             console.error("[doUiAction] uiActionId not find", { uiActionId });
@@ -185,7 +194,46 @@
 
         this.subjectList = rows;
       },
-      
+
+      async getFormulaList({ item }) {
+        this.loadingFormulaList = true
+        const result = await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'assetsAndLiabilitiesManagement',
+              actionId: 'selectFormulaList',
+              actionData: {},
+              where: {balanceSheetId: item.balanceSheetId},
+              orderBy: [{column: 'operationAt', order: 'desc'}]
+            }
+          }
+        });
+        this.loadingFormulaList = false
+        const { rows } = result.data.appData.resultData;
+
+        this.subjectList = rows;
+      },
+      async doSubmitFormula() {
+        const formulaList = this.formulaList
+        const formulaListPromise = []
+
+        formulaList.forEach(item=> {
+          formulaListPromise.push(
+            window.jianghuAxios({
+              data: {
+                appData: {
+                  pageId: 'assetsAndLiabilitiesManagement',
+                  actionId: 'insertFormulaItem',
+                  actionData: item,
+                }
+              }
+            })
+          )
+        })
+
+        await Promise.all(formulaListPromise);
+        this.isAddDrawerShow = false
+      }
     }
   })
 </script>
