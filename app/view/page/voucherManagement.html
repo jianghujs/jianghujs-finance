@@ -66,14 +66,14 @@ SQL END!-->
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
 
       <template v-slot:group.header="{items, isOpen, toggle, remove}">
-        <th>
+        <td>
           <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
           <span class="text-subtitle-2">{{ items[0].periodId }} </span>
           <span class="text-subtitle-2">{{ items[0].voucherId }}</span>
-        </th>
-        <th>
+        </td>
+        <td>
           <span class="text-subtitle-2"> {{ items[0].voucherAt }}</span>
-        </th>
+        </td>
       </template>
       <template v-slot:item.voucherId="{ item }">
         <div style="opacity: 0;">{{item.voucherId}}</div>
@@ -107,8 +107,6 @@ SQL END!-->
           :items="constantCollection.voucherName" dense filled single-line v-model="addItem['voucherName']"></v-select>
         <v-text-field class="cus-v-input " 
           prefix="凭证号" dense filled single-line 
-          append-outer-icon="mdi-refresh"
-          @click:append-outer="updateAddItemVoucherNumber"
           v-model="addItem.voucherNumber" type="number"></v-text-field>
       </v-col>
        
@@ -224,14 +222,18 @@ new Vue({
       return this.tableDataFromBackend;
     }
   },
-  watch: {},
+  watch: {
+    'addItem.voucherName'() {
+      this.updateAddItemVoucherNumber()
+    }
+  },
   async created() {
     await Promise.all([
       this.doUiAction('refreshTableData'),
       this.doUiAction('getPeriodList'),
       this.doUiAction('getSubjectList'),
       // Tip: 测试代码
-      this.doUiAction('startCreateItem'),
+      // this.doUiAction('startCreateItem'),
     ])
 
   },

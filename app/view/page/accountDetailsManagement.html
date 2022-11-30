@@ -50,11 +50,13 @@
           hoverable
           activatable
           dense
+          :active="defaultActiveSubjectId"
           open-on-click
           key="subjectId"
           periodId: null
           :items="subjectList"
           item-text="subjectName"
+          item-key="subjectId"
           color="primary"
           :search="search"
           :filter="filter"
@@ -96,7 +98,7 @@
                       :loading="isTableLoading"
                       checkbox-color="success"
                       class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-          
+        
       </v-card>
     </v-col>
   </v-row>
@@ -136,6 +138,8 @@ new Vue({
       // {text: "凭证字", value: "voucherName", width: 120}, 
       {text: "借方金额", value: "debit", width: 80}, 
       {text: "贷方金额", value: "credit", width: 80}, 
+      {text: "方向", value: "subjectBalanceDirection", width: 80}, 
+      
       {text: "凭证时间", value: "voucherAt", width: 120}, 
       {text: "操作者", value: "operationByUser", width: 120},
       {text: "操作时间", value: "operationAt", width: 250},
@@ -145,6 +149,7 @@ new Vue({
     search: null,
     caseSensitive: false,
     periodList: [],
+    defaultActiveSubjectId: []
   }),
   computed: {
     isMobile() {
@@ -163,8 +168,8 @@ new Vue({
     
   },
   async created() {
+    await this.doUiAction('getSubjectList'),
     await Promise.all([
-      this.doUiAction('getSubjectList'),
       this.doUiAction('refreshTableData'),
       this.doUiAction('getPeriodList'),
     ])
@@ -234,6 +239,8 @@ new Vue({
 
       this.subjectList = rows;
       this.serverSearchInput.subjectId = rows[0].subjectId
+      // 默认第一个，直接默认值的话，会影响下次点击的效果
+      this.defaultActiveSubjectId = [rows[0].subjectId]
     },
 
     async getPeriodList() {
