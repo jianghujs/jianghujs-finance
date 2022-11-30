@@ -137,6 +137,7 @@ new Vue({
       // {text: "凭证字", value: "voucherName", width: 120}, 
       {text: "借方金额", value: "debit", width: 80}, 
       {text: "贷方金额", value: "credit", width: 80}, 
+      {text: "余额", value: "balance", width: 80}, 
       {text: "方向", value: "subjectBalanceDirection", width: 80}, 
       
       {text: "凭证时间", value: "voucherAt", width: 120}, 
@@ -215,14 +216,23 @@ new Vue({
             actionData: {},
             whereIn: { periodId: periodIds},
             where: serverSearchInputData,
-            orderBy: [{column: 'operationAt', order: 'desc'}]
+            orderBy: [{column: 'voucherAt', order: 'desc'}]
           }
         }
       });
       const { rows } = result.data.appData.resultData;
 
-      this.tableDataFromBackend = rows;
+      this.tableDataFromBackend = this._countVoucherEntryBalance(rows);
       this.isTableLoading = false;
+    },
+    _countVoucherEntryBalance(rows) {
+      let prev = {}
+      return rows.map(item=> {
+        item.balance = (prev.balance || 0) + (item.debit - item.credit)
+        prev = item
+        return item
+      })
+     
     },
     // =================================uiAction 公共方法 end ======================================
     async getSubjectList() {
