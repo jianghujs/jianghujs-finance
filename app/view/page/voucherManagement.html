@@ -68,12 +68,11 @@ SQL END!-->
       <template v-slot:group.header="{items, isOpen, toggle, remove}">
         <td>
           <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
-          <span class="text-subtitle-2">{{ items[0].periodId }} </span>
+     
           <span class="text-subtitle-2">{{ items[0].voucherId }}</span>
+          <span class="text-subtitle-2 ml-2"> {{ items[0].voucherAt }}</span>
         </td>
-        <td>
-          <span class="text-subtitle-2"> {{ items[0].voucherAt }}</span>
-        </td>
+       
       </template>
       <template v-slot:item.voucherId="{ item }">
         <div style="opacity: 0;">{{item.voucherId}}</div>
