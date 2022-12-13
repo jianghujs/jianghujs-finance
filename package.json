@@ -25,9 +25,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --port=7001 --title=jianghujs_demo_onetable",
+    "start": "egg-scripts start --daemon --port=9011 --title=jianghujs_demo_onetable",
     "stop": "egg-scripts stop --title=jianghujs_demo_onetable",
-    "dev": "egg-bin dev --port=7001",
+    "dev": "egg-bin dev --port=9011",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test",
