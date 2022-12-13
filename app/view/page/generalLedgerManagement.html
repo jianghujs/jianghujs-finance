@@ -38,7 +38,7 @@
         <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
       </v-col>
     </v-row>
-    <v-data-table fixed-header
+    <v-data-table height="500" fixed-header
       :headers="headers"
       :items="tableData"
       :search="searchInput"
