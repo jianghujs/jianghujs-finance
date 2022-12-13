@@ -11,13 +11,13 @@ const eggJianghuPath = path.join(eggJianghuPathTemp, '../');
 module.exports = appInfo => {
   assert(appInfo);
 
-  const appId = 'jianghujs-finance';
+  const appId = 'fs_finance';
   const uploadDir = path.join(appInfo.baseDir, 'upload');
   const downloadBasePath = `/${appId}/upload`;
 
   return {
     appId,
-    appTitle: '财务管理',
+    appTitle: '风神财务管理',
     appLogo: `${appId}/public/img/logo.png`,
     appType: 'single',
     appDirectoryLink: '/',
