@@ -59,10 +59,9 @@ SQL END!-->
                   :loading="isTableLoading"
                   checkbox-color="success"
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-      <!-- <template v-slot:item.action="{ item }">
+      <template v-slot:item.action="{ item }">
         <v-btn small class=" success" @click="doUiAction('startUpdateItem', {item})">修改</v-btn>
-        <v-btn small class=" error" @click="doUiAction('deleteItem', {item})">删除</v-btn>
-      </template> -->
+      </template>
     </v-data-table>
   </v-card>
 </v-container>
@@ -86,7 +85,11 @@ SQL END!-->
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">是否结算</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['isCheckout']"></v-text-field>
+        <v-select 
+          v-model="addItem.isCheckout" 
+          :items="constantCollection.isCheckout" 
+          class="cus-v-input"
+          dense filled></v-select>
       </v-col>
        
     </v-row>
@@ -102,7 +105,7 @@ SQL END!-->
 <v-navigation-drawer v-model="isEditDrawerShow" :permanent="isEditDrawerShow" fixed temporary right width="80%" class="elevation-24">
   <v-form v-model="isFormValid" v-if="isEditDrawerShow" ref="form" lazy-validation>
     <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">编辑信息</span>
+      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">修改</span>
       <v-spacer></v-spacer>
       <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isEditDrawerShow = false">
         <v-icon dark>mdi-close</v-icon>
@@ -111,13 +114,17 @@ SQL END!-->
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计期间Id</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['periodId']"></v-text-field>
+        <span class="inputLabel">会计期间</span>
+        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['periodId']" disabled="true"></v-text-field>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">是否结算</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['isCheckout']"></v-text-field>
+        <v-select 
+          v-model="editItem.isCheckout" 
+          :items="constantCollection.isCheckout" 
+          class="cus-v-input"
+          dense filled></v-select>
       </v-col>
        
 <!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
@@ -166,6 +173,10 @@ new Vue({
       v => !!v || 'This is required',
     ],
     constantCollection: {
+      isCheckout: [
+        {text: '未结算', value: '未结算'},
+        {text: '已结算', value: '已结算'},
+      ]
     },
 
     serverSearchInput: {
@@ -178,6 +189,7 @@ new Vue({
     headers: [
       {text: "会计期间", value: "periodId", width: 120, class: 'fixed', cellClass: 'fixed'}, 
       {text: "是否结算", value: "isCheckout", width: 120}, 
+      {text: '操作', value: 'action', align: 'center', sortable: false, width: 120, class: 'fixed', cellClass: 'fixed'},
     ],
     isEditDrawerShow: false,
     editItem: {},
@@ -262,7 +274,7 @@ new Vue({
             actionData: {},
             where: {},
             whereLike: serverSearchInput,
-            orderBy: [{column: 'operationAt', order: 'desc'}]
+            orderBy: [{column: 'periodId', order: 'desc'}]
           }
         }
       });
