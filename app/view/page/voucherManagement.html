@@ -21,7 +21,14 @@ SQL END!-->
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
       <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
-        <v-select prefix="会计期间" :items="periodList" item-text="periodId" item-value="periodId" hide-details dense filled v-model="serverSearchInput.periodId"></v-select>
+        <v-select prefix="会计期间" 
+          :items="periodList" 
+          v-model="serverSearchInput.periodId"
+          item-text="periodId" 
+          item-value="periodId" 
+          class="cus-v-input"
+          dense filled
+          ></v-select>
       </v-col>
 
       <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
@@ -187,8 +194,10 @@ new Vue({
     ],
     constantCollection: {
       voucherName: [
-        { text: '记5432', value: '记5432' },
-        { text: '记5555', value: '记5555' },
+        { text: '记', value: '记' },
+        { text: '收', value: '收' },
+        { text: '借', value: '借' },
+        { text: '付', value: '付' },
       ]
     },
 
@@ -316,7 +325,7 @@ new Vue({
             actionId: 'selectPeriodList',
             actionData: {},
             where: {},
-            orderBy: [{column: 'operationAt', order: 'desc'}]
+            orderBy: [{column: 'periodId', order: 'desc'}]
           }
         }
       });
