@@ -54,7 +54,7 @@ class VoucherService extends Service {
     const { username } = this.ctx.userInfo;
     const { actionData } = this.ctx.request.body.appData
     validateUtil.validate(actionDataScheme.createVoucherAndVoucherEntry, actionData);
-    const { voucherEntryList, periodId, voucherAt, voucherName, voucherNumber} = actionData;
+    const { voucherEntryList, periodId, voucherAt, voucherName, voucherNumber, voucherAdditionalCount} = actionData;
 
     const voucherId = `${voucherName}-${voucherNumber}`;
     const countResult = await jianghuKnex(tableEnum.voucher).where({ voucherId }).count('voucherId as count');
@@ -64,7 +64,7 @@ class VoucherService extends Service {
 
     await knex.transaction(async trx => {
       await trx(tableEnum.voucher).insert({
-        voucherId, voucherName, voucherNumber,
+        voucherId, voucherName, voucherNumber, voucherAdditionalCount,
         periodId, voucherAt, voucherAccountant: username
       });
 
@@ -81,8 +81,8 @@ class VoucherService extends Service {
           subjectId: voucherEntryList[i].subjectId,
         })
         .increment({
-          credit: voucherEntryList[i].credit,
-          debit: voucherEntryList[i].debit,
+          credit: voucherEntryList[i].credit || 0,
+          debit: voucherEntryList[i].debit || 0,
         });
       }
       

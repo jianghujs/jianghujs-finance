@@ -53,7 +53,7 @@ SQL END!-->
         <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
       </v-col>
     </v-row>
-    <v-data-table height="500" fixed-header
+    <v-data-table fixed-header
                   :headers="headers"
                   :items="tableData"
                   :search="searchInput"
@@ -80,9 +80,15 @@ SQL END!-->
        <template v-slot:item.voucherAt="{ item }">
         <div style="opacity: 0;">{{item.voucherAt}}</div>
        </template>
-      <template v-slot:item.subject-name="{ item }">
-       {{item.subjectId}} {{item.subjectName}}
-      </template>
+       <template v-slot:item.subject-name="{ item }">
+        {{item.subjectId}} {{item.subjectName}}
+       </template>
+       <template v-slot:item.credit="{ item }">
+        {{item.credit || ''}}
+       </template>
+       <template v-slot:item.debit="{ item }">
+        {{item.debit || ''}}
+       </template>
     </v-data-table>
   </v-card>
 </v-container>
@@ -98,58 +104,57 @@ SQL END!-->
       </v-btn>
     </v-row>
     <v-row :class="{'px-10': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}">
-       
-
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证字号</span>
-        <v-select :rules="requireRules" prefix="凭证字" 
-          :items="constantCollection.voucherName" dense filled single-line v-model="addItem['voucherName']"></v-select>
-        <v-text-field class="cus-v-input " 
-          prefix="凭证号" dense filled single-line 
-          v-model="addItem.voucherNumber" type="number"></v-text-field>
-      </v-col>
-       
-
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证时间</span>
-        <v-menu
-          v-model="isVoucherAtMenuShow"
-          :close-on-content-click="false"
-          :nudge-right="40"
-          transition="scale-transition"
-          offset-y
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              :rules="requireRules"
-              class="cus-v-input"
-              dense filled single-line
-              v-model="addItem['voucherAt']"
-              label=""
-              readonly
-              v-bind="attrs"
-              v-on="on"
-            ></v-text-field>
-          </template>
-          <v-date-picker
-            v-model="addItem['voucherAt']"
-            @input="isVoucherAtMenuShow = false"
-          ></v-date-picker>
-        </v-menu>
-
-      </v-col>
 
       <!-- <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">会计期间</span>
         <v-text-field class="cus-v-input " dense filled single-line v-model="addItem.periodId" disabled="true"></v-text-field>
       </v-col> -->
 
-      <v-col cols="12" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">凭证条目</span>
-        <voucher-management-entry v-model="voucherEntryList" :subject-list="subjectList" :rules="voucherEntryRules"/>
-      </v-col> 
-       
+      <div class="enhancer-voucher-header">
+        <span class="enhancer-voucher-char-wrap">
+          凭证字
+          <v-select :rules="requireRules" class="enhancer-voucher-char"
+          :items="constantCollection.voucherName" single-line v-model="addItem['voucherName']"></v-select>
+          <input v-model="addItem.voucherNumber" class="enhancer-voucher-no ui-widget-content" type="number" min="0" value="1">
+          号
+        </span>
+        <span class="enhancer-voucher-date-wrap">
+          日期
+          <v-menu
+            v-model="isVoucherAtMenuShow"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            transition="scale-transition"
+            offset-y
+            min-width="auto"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                :rules="requireRules"
+                class="enhancer-voucher-date"
+                single-line
+                v-model="addItem['voucherAt']"
+                label=""
+                readonly
+                v-bind="attrs"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="addItem['voucherAt']"
+              @input="isVoucherAtMenuShow = false"
+            ></v-date-picker>
+          </v-menu>
+          
+        </span>
+        <span class="enhancer-voucher-title">记账凭证</span>
+        <span class="enhancer-voucher-attachments-wrap">
+          附单据
+          <input v-model="addItem.voucherAdditionalCount" class="enhancer-voucher-attachments ui-widget-content" type="number" name="" min="0" value="0">
+          张
+        </span>
+      </div>
+      <voucher-management-entry v-model="voucherEntryList" :subject-list="subjectList" :rules="voucherEntryRules"/>
     </v-row>
     <v-row class="justify-end pr-6">
       <v-btn color="success" @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">确定</v-btn>
@@ -380,10 +385,9 @@ new Vue({
     async computePeriodId () {
       const { voucherAt } = this.addItem;
       const periodId = dayjs(voucherAt).format("YYYY-MM");
-
-      if (this.periodList.findIndex(p => p.periodId === periodId) === -1) {
-        window.vtoast.fail("凭证时间匹配不到会计期间!");
-        throw new Error("取消");
+      if (this.periodList.findIndex(p => p.periodId === periodId && p.isCheckout != '已结算') === -1 ) {
+        window.vtoast.fail("凭证日期匹配不到会计期间或会计区间已结算!");
+        throw new Error("凭证日期匹配不到会计期间或会计区间已结算!");
       }
       this.addItem.periodId = periodId;
     },
@@ -398,13 +402,12 @@ new Vue({
     },
     async doCreateItem() {
       const { id, ...data } = this.addItem;
-      const voucherEntryList = this.voucherEntryList
+      const voucherEntryList = this.voucherEntryList.map(voucherEntry => _.pick(voucherEntry, 'entryAbstract', 'subjectId', 'debit', 'credit'))
       
       //判断借贷是否平衡
-      const debitPrice = voucherEntryList.filter(item=> item.debit != 0)
-      .reduce((prev, next)=> next.debit + prev, 0)
-      const creditPrice = voucherEntryList.filter(item=> item.credit != 0)
-      .reduce((prev, next)=> next.credit + prev, 0)
+      const debitPrice = voucherEntryList.reduce((prev, next)=> Math.round((next.debit || 0) * 100) + prev, 0)
+      const creditPrice = voucherEntryList.reduce((prev, next)=> Math.round((next.credit || 0) * 100) + prev, 0)
+      
       if (debitPrice != creditPrice) {
         window.vtoast.fail({ message: "借贷不平衡!" });
         throw new Error("[doCreateItem] false");
@@ -438,5 +441,16 @@ new Vue({
 </script>
 
 <style scoped>
+  .enhancer-voucher-header { position: relative; font-size: 12px; box-sizing: border-box; width: 100%; padding: 10px 0; }
+  .enhancer-voucher-header .enhancer-voucher-char-wrap { position: relative; display: inline-block; overflow: visible; float: left; }
+  .enhancer-voucher-header .enhancer-voucher-char-wrap .enhancer-voucher-char { border: 1px solid #eee; height: 32px; display: inline-block; width: 88px; margin: 0px; padding: 0; }
+  .enhancer-voucher-header .enhancer-voucher-char-wrap .enhancer-voucher-char .v-select__selection { font-size: 12px; }
+  .enhancer-voucher-header .enhancer-voucher-char-wrap .enhancer-voucher-no { border: 1px solid #eee; line-height: 30px;width: 32px; padding-left: 4px; position: relative; text-align: left; }
+  .enhancer-voucher-header .enhancer-voucher-date-wrap { float: left; margin-left: 12px; position: relative; display: inline-block; }
+  .enhancer-voucher-header .enhancer-voucher-date-wrap .enhancer-voucher-date { border: 1px solid #eee; height: 32px;margin-left: 2px; display: inline-block; margin: 0; padding: 0; }
+  .enhancer-voucher-header .enhancer-voucher-title { font-size: 18px; width: 100px; height: 18px; line-height: 18px; position: absolute; left: 50%; top: 50%; margin-left: -50px; margin-top: -9px; }
+  .enhancer-voucher-header .enhancer-voucher-attachments-wrap { float: right; padding: 0 5px; }
+  .enhancer-voucher-header .enhancer-voucher-attachments-wrap .enhancer-voucher-attachments { width: 32px; border: 1px solid #eee; line-height: 30px; }
+  .enhancer-voucher-header .
 </style>
 {% endblock %}
