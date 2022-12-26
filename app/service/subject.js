@@ -116,57 +116,71 @@ class SubjectService extends Service {
    * 
    */
   async countSubjectBalance() {
-    const { jianghuKnex, knex } = this.app
-    const periodList = await jianghuKnex(tableEnum.period).select()
-    const subjectList = await jianghuKnex(tableEnum.subject).select()
+    const { jianghuKnex, knex } = this.app;
+    const periodList = await jianghuKnex(tableEnum.period).select();
+    const subjectList = await jianghuKnex(tableEnum.subject).select();
+    const subjectBalanceList = await jianghuKnex(tableEnum.subject_balance).select();
 
+    // 生成科目余额
+    const allSubjectBalanceList = [];
     for (let i = 0; i < periodList.length; i++) {
-      for (let j = 0; j < subjectList.length; j++) {
-        const periodItem = periodList[i]
-        const subjectItem = subjectList[j]
-
-        // 先查查有没有对应科目余额
-        const firstSubjectBalance = await jianghuKnex(tableEnum.subject_balance)
-          .where({
-            periodId: periodItem.periodId,
-            subjectId: subjectItem.subjectId,
-          })
-          .select()
-          .first()
-
-        if (!firstSubjectBalance) {
-          await jianghuKnex(tableEnum.subject_balance, this.ctx).insert({
-            periodId: periodItem.periodId,
-            subjectId: subjectItem.subjectId,
-          })
-        } else {
-          
-        }
-
-        const voucherEntryList = await jianghuKnex(tableEnum.view01_voucher_entry).where({
-          periodId: periodItem.periodId,
-          subjectId: subjectItem.subjectId,
-        })
-          .select()
-
-        const debit = voucherEntryList.reduce((prev, next) => prev + next.debit, 0)
-        const credit = voucherEntryList.reduce((prev, next) => prev + next.credit, 0)
-
-        await jianghuKnex(tableEnum.subject_balance, this.ctx)
-          .where({
-            periodId: periodItem.periodId,
-            subjectId: subjectItem.subjectId,
-          })
-          .update({
-            debit,
-            credit,
-          })
-      }
+      const period = periodList[i];
+      const periodSubjectBalanceList = subjectList.map(s => {
+        return { periodId: period.periodId, subjectId: s.subjectId, debit:0, credit: 0 }
+      })
+      allSubjectBalanceList.push(...periodSubjectBalanceList);
+    }
+    const waittingCreateSubjectBalanceList = allSubjectBalanceList
+      .filter(sb => subjectBalanceList.findIndex(item => item.periodId === sb.periodId && item.subjectId === sb.subjectId) === -1)
+    if (waittingCreateSubjectBalanceList.length > 0) {
+      await jianghuKnex(tableEnum.subject_balance, this.ctx).insert(waittingCreateSubjectBalanceList)
     }
 
+    // 计算科目余额
 
+    // for (let i = 0; i < periodList.length; i++) {
+    //   for (let j = 0; j < subjectList.length; j++) {
+    //     const periodItem = periodList[i]
+    //     const subjectItem = subjectList[j]
 
+    //     // 先查查有没有对应科目余额
+    //     const firstSubjectBalance = await jianghuKnex(tableEnum.subject_balance)
+    //       .where({
+    //         periodId: periodItem.periodId,
+    //         subjectId: subjectItem.subjectId,
+    //       })
+    //       .select()
+    //       .first()
 
+    //     if (!firstSubjectBalance) {
+    //       await jianghuKnex(tableEnum.subject_balance, this.ctx).insert({
+    //         periodId: periodItem.periodId,
+    //         subjectId: subjectItem.subjectId,
+    //       })
+    //     } else {
+          
+    //     }
+
+    //     const voucherEntryList = await jianghuKnex(tableEnum.view01_voucher_entry).where({
+    //       periodId: periodItem.periodId,
+    //       subjectId: subjectItem.subjectId,
+    //     })
+    //       .select()
+
+    //     const debit = voucherEntryList.reduce((prev, next) => prev + next.debit, 0)
+    //     const credit = voucherEntryList.reduce((prev, next) => prev + next.credit, 0)
+
+    //     await jianghuKnex(tableEnum.subject_balance, this.ctx)
+    //       .where({
+    //         periodId: periodItem.periodId,
+    //         subjectId: subjectItem.subjectId,
+    //       })
+    //       .update({
+    //         debit,
+    //         credit,
+    //       })
+    //   }
+    // }
   }
 
   /**
