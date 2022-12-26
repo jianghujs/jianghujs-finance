@@ -5,8 +5,6 @@ const path = require('path');
 module.exports = appInfo => {
 
   return {
-    appType: 'multiApp',
-    appDirectoryLink: 'https://fsdir.eggjs.tech',
     static: {
       maxAge: 0,
       buffer: false,
