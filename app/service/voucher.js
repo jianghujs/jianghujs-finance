@@ -74,17 +74,17 @@ class VoucherService extends Service {
       await trx(tableEnum.voucher_entry).insert(voucherEntryList);
 
       // TODO: 触发更新科目余额
-      for (let i = 0; i < voucherEntryList.length; i++) {
-        await trx(tableEnum.subject_balance)
-        .where({
-          periodId,
-          subjectId: voucherEntryList[i].subjectId,
-        })
-        .increment({
-          credit: voucherEntryList[i].credit || 0,
-          debit: voucherEntryList[i].debit || 0,
-        });
-      }
+      // for (let i = 0; i < voucherEntryList.length; i++) {
+      //   await trx(tableEnum.subject_balance)
+      //   .where({
+      //     periodId,
+      //     subjectId: voucherEntryList[i].subjectId,
+      //   })
+      //   .increment({
+      //     credit: voucherEntryList[i].credit || 0,
+      //     debit: voucherEntryList[i].debit || 0,
+      //   });
+      // }
       
 
     });

@@ -31,7 +31,7 @@
               </div>
               <input type="text" v-model="item.entryAbstract"/> 
             </td>
-            <td> <v-autocomplete :items="subjectList" item-text="subjectName" item-value="subjectId" single-line v-model="item.subjectId"> </v-autocomplete> </td>
+            <td> <v-autocomplete :items="subjectList" item-text="text" item-value="subjectId" single-line v-model="item.subjectId"> </v-autocomplete> </td>
             <td class="enhancer-voucher-digit enhancer-voucher-digit-value">
               <div class="enhancer-voucher-digit-wrap">
                 <div v-for="(digitValueItem, digitValueIndex) in item.debitText || '           '">{{digitValueItem}}</div>

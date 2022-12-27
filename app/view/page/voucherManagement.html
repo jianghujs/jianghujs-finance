@@ -342,12 +342,14 @@ new Vue({
             actionId: 'selectSubjectList',
             actionData: {},
             where: {},
-            orderBy: [{column: 'operationAt', order: 'desc'}]
+            orderBy: [{column: 'subjectCategory', order: 'desc'}, {column: 'operationAt', order: 'desc'}]
           }
         }
       });
       const { rows } = result.data.appData.resultData;
-
+      rows.forEach(row => {
+        row.text = `${row.subjectId} ${row.subjectName} (${row.subjectCategory})`
+      })
       this.subjectList = rows;
     },
 
