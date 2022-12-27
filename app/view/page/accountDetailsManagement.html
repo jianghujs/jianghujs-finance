@@ -28,7 +28,7 @@
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
   <v-row>
     <v-col cols="2">
-      <v-card height="500" class="overflow-y-auto">
+      <v-card class="overflow-y-auto">
         <v-sheet class="pa-4">
           <v-text-field
             v-model="search"
@@ -87,7 +87,7 @@
             <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
           </v-col>
         </v-row>
-        <v-data-table height="500" fixed-header
+        <v-data-table fixed-header
                       :headers="headers"
                       :items="tableData"
                       :search="searchInput"

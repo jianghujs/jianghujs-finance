@@ -41,7 +41,7 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <v-data-table height="500" fixed-header :headers="headers" :items="assetData" :search="searchInput"
+          <v-data-table fixed-header :headers="headers" :items="assetData" :search="searchInput"
             :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="-1"
             mobile-breakpoint="0"
             sort-by="profitFormulaCount"
@@ -73,7 +73,7 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <v-data-table height="500" fixed-header :headers="headers" :items="liabilitiesData" :search="liabilitiesSearchInput"
+          <v-data-table fixed-header :headers="headers" :items="liabilitiesData" :search="liabilitiesSearchInput"
             :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="-1"
             mobile-breakpoint="0"
             sort-by="profitFormulaCount"
