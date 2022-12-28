@@ -236,9 +236,6 @@ new Vue({
     }
   },
   watch: {
-    'addItem.voucherName'() {
-      this.updateAddItemVoucherNumber()
-    }
   },
   async created() {
     await Promise.all([
@@ -265,6 +262,7 @@ new Vue({
           break;
         case 'startCreateItem':
           await this.clearItemData();
+          await this.updateAddItemVoucherNumber()
           await this.openCreateItemDialog();
           break;
         case 'createItem':
@@ -382,7 +380,6 @@ new Vue({
         }
       });
       const { voucherNumber } = result.data.appData.resultData;
-      // Bug: 为啥更新不上去? 因为vue的更新机制，只有预先定义在data中的数据才有响应式更新
       this.addItem = {
         ...this.addItem,
         voucherNumber: voucherNumber
@@ -413,8 +410,18 @@ new Vue({
     },
     async doCreateItem() {
       const { id, ...data } = this.addItem;
-      const voucherEntryList = this.voucherEntryList.map(voucherEntry => _.pick(voucherEntry, 'entryAbstract', 'subjectId', 'debit', 'credit'))
+      const voucherEntryList = this.voucherEntryList
+        .filter(v => v.subjectId)
+        .map(voucherEntry => _.pick(voucherEntry, 'entryAbstract', 'subjectId', 'debit', 'credit'))
       
+      if (voucherEntryList.length === 0) {
+        window.vtoast.fail("请填写凭证信息!");
+        throw new Error("[doCreateItem] false 请填写凭证信息");
+      }
+      voucherEntryList.forEach(v => {
+        v.debit = v.debit || 0;
+        v.credit = v.credit || 0;
+      })
       //判断借贷是否平衡
       const debitPrice = voucherEntryList.reduce((prev, next)=> Math.round((next.debit || 0) * 100) + prev, 0)
       const creditPrice = voucherEntryList.reduce((prev, next)=> Math.round((next.credit || 0) * 100) + prev, 0)
@@ -456,7 +463,7 @@ new Vue({
   .enhancer-voucher-header .enhancer-voucher-char-wrap { position: relative; display: inline-block; overflow: visible; float: left; }
   .enhancer-voucher-header .enhancer-voucher-char-wrap .enhancer-voucher-char { border: 1px solid #eee; height: 32px; display: inline-block; width: 88px; margin: 0px; padding: 0; }
   .enhancer-voucher-header .enhancer-voucher-char-wrap .enhancer-voucher-char .v-select__selection { font-size: 12px; }
-  .enhancer-voucher-header .enhancer-voucher-char-wrap .enhancer-voucher-no { border: 1px solid #eee; line-height: 30px;width: 32px; padding-left: 4px; position: relative; text-align: left; }
+  .enhancer-voucher-header .enhancer-voucher-char-wrap .enhancer-voucher-no { border: 1px solid #eee; line-height: 30px;width: 80px; padding-left: 4px; position: relative; text-align: left; }
   .enhancer-voucher-header .enhancer-voucher-date-wrap { float: left; margin-left: 12px; position: relative; display: inline-block; }
   .enhancer-voucher-header .enhancer-voucher-date-wrap .enhancer-voucher-date { border: 1px solid #eee; height: 32px;margin-left: 2px; display: inline-block; margin: 0; padding: 0; }
   .enhancer-voucher-header .enhancer-voucher-title { font-size: 18px; width: 100px; height: 18px; line-height: 18px; position: absolute; left: 50%; top: 50%; margin-left: -50px; margin-top: -9px; }
