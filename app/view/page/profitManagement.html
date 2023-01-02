@@ -1,0 +1,318 @@
+{% extends 'template/jhTemplateV3.html'%}
+
+{% block vue_template %}
+
+<jh-layout-v3>
+  <template slot="serverSearch">
+    <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
+      <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+        <v-select prefix="会计期间" 
+          :items="periodList" 
+          v-model="serverSearchInput.periodId"
+          item-text="periodId" 
+          item-value="periodId" 
+          class="cus-v-input"
+          dense filled clearable
+          ></v-select>
+      </v-col>
+
+      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
+        <v-btn
+          class="elevation-0"
+          color="success"
+          dark
+          @click="doUiAction('refreshTableData')"
+        >
+          查询
+        </v-btn>
+      </v-col>
+    </v-row>
+  </template>
+
+  <!-- 页面主要内容 -->
+  <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
+
+    <v-row>
+      <v-col cols="12">
+        <v-card>
+          <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 "
+            :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+    
+            <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
+              <span class="body-2">共{{ tableData.length }}条记录</span>
+            </v-col>
+    
+            <v-spacer></v-spacer>
+    
+            <v-col cols="12" xs="6" sm="6" md="4" xl="4" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+              <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line>
+              </v-text-field>
+            </v-col>
+          </v-row>
+          <v-data-table fixed-header :headers="headers" :items="tableData" :search="searchInput"
+            :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }" :items-per-page="-1"
+            mobile-breakpoint="0"
+            sort-by="profitFormulaCount"
+            :sort-desc="true"
+            :loading="isTableLoading" checkbox-color="success"
+            class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+            <template v-slot:item.action="{ item }">
+              <v-icon small @click="doUiAction('startAddFormula', {item})">
+                mdi-clipboard-edit-outline
+              </v-icon>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
+
+
+  </v-container>
+
+  <!-- 新增 -->
+  <v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%"
+    class="elevation-24">
+    <v-row class="pt-8">
+      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">新增公式</span>
+      <v-spacer></v-spacer>
+      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isAddDrawerShow = false">
+        <v-icon dark>mdi-close</v-icon>
+      </v-btn>
+    </v-row>
+    <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
+      <profit-management-formula v-model="formulaList" :subjectList="subjectList" :loadingFormulaList="loadingFormulaList" @doDeleteItem="doUiAction('doDeleteFormulaItem', { item: $event})" />
+      
+      <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
+        <v-btn class="ml-2" color="success" @click="doUiAction('doSubmitFormula')">提交</v-btn>
+        <v-btn class="ml-2" @click="isAddDrawerShow = false">取消</v-btn>
+      </v-row>
+    </v-form>
+
+  </v-navigation-drawer>
+</jh-layout-v3>
+
+{% endblock %}
+
+{% block vue_body %}
+{% include 'component/profitManagement-formula.html' %}
+<script type="module">
+  new Vue({
+    el: '#app',
+    template: '#app-template',
+    vuetify: new Vuetify(),
+    data: () => ({
+      // 表格相关数据
+      isFormValid: true,
+      requireRules: [
+        v => !!v || 'This is required',
+      ],
+      constantCollection: {
+
+      },
+      serverSearchInput: {
+        periodId: null,
+      },
+      searchInput: null,
+      isTableLoading: true,
+      tableDataFromBackend: [],
+      editItem: {},
+      headers: [
+        { text: "项目", value: "balanceSheetId", width: 400 },
+        { text: "本年累计金额", value: "profitFormulaCount", width: 200 },
+        { text: "本月金额", value: "endOfTermBalance", width: 200 },
+        { text: '操作', value: 'action', class: 'fixed', cellClass: 'fixed', width: 200 },
+      ],
+      isAddDrawerShow: false,
+      periodList: [],
+      subjectList: [],
+      formulaList: [],
+      loadingFormulaList: false,
+
+    }),
+    computed: {
+      isMobile() {
+        return window.innerWidth < 600;
+      },
+      tableData() {
+        return this.tableDataFromBackend;
+      },
+    },
+    watch: {},
+    async created() {
+      await Promise.all([
+        this.doUiAction('refreshTableData'),
+        this.doUiAction('getPeriodList'),
+        this.doUiAction('getSubjectList'),
+      ])
+    },
+    mounted() { },
+    methods: {
+      async doUiAction(uiActionId, uiActionData) {
+        switch (uiActionId) {
+          case 'refreshTableData':
+            await this.refreshTableData();
+            break;
+          case 'getPeriodList':
+            await this.getPeriodList();
+            break;
+          case 'getSubjectList':
+            await this.getSubjectList();
+            break;
+          case 'startAddFormula':
+            await this.startAddFormula(uiActionData);
+            await this.getFormulaList(uiActionData);
+            break;
+          case 'doSubmitFormula':
+            await this.prepareValidate();
+            await this.doSubmitFormula();
+            await this.refreshTableData();
+            
+            break;
+          case 'doDeleteFormulaItem':
+            await this.doDeleteFormulaItem(uiActionData);
+            await this.getFormulaList();
+            break;
+          default:
+            console.error("[doUiAction] uiActionId not find", { uiActionId });
+            break;
+        }
+      },
+      async startAddFormula({ item }) {
+        this.formulaList = []
+        this.isAddDrawerShow = true
+        this.editItem = item
+      },
+
+      async prepareValidate() {
+        if (this.$refs.form.validate() === false) {
+          window.vtoast.fail({ message: "输入有误, 请检查!" });
+          throw new Error("[prepareValidate] false");
+        }
+      },
+
+      /**
+       * uiActionId:  refreshTableData
+       * description: ✅获取表格数据
+      */
+      async refreshTableData() {
+        this.isTableLoading = true;
+        const serverSearchInput = _.pickBy(this.serverSearchInput, value => !!value);
+        const result = await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'assetsAndLiabilitiesManagement',
+              actionId: 'selectItemList',
+              actionData: {},
+              where: {},
+              whereIn: { direction: serverSearchInput.direction },
+            }
+          }
+        });
+
+        const { rows } = result.data.appData.resultData;
+
+        this.tableDataFromBackend = rows;
+        this.isTableLoading = false;
+      },
+      // =================================uiAction 公共方法 end ======================================
+      async getPeriodList() {
+        const result = await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'voucherManagement',
+              actionId: 'selectPeriodList',
+              actionData: {},
+              where: {},
+              orderBy: [{column: 'periodId', order: 'desc'}]
+            }
+          }
+        });
+        const { rows } = result.data.appData.resultData;
+
+        this.periodList = rows;
+      },
+      async getSubjectList() {
+        const result = await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'assetsAndLiabilitiesManagement',
+              actionId: 'selectSubjectList',
+              actionData: {},
+              where: {},
+              orderBy: [{column: 'operationAt', order: 'desc'}]
+            }
+          }
+        });
+        const { rows } = result.data.appData.resultData;
+
+        this.subjectList = rows;
+      },
+
+      async getFormulaList({ item }) {
+        this.loadingFormulaList = true
+        const { balanceSheetId } = this.editItem
+        const result = await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'assetsAndLiabilitiesManagement',
+              actionId: 'selectFormulaList',
+              actionData: {},
+              where: {balanceSheetId},
+              orderBy: [{column: 'operationAt', order: 'desc'}]
+            }
+          }
+        });
+        this.loadingFormulaList = false
+        const { rows } = result.data.appData.resultData;
+
+        this.formulaList = rows;
+      },
+      async doSubmitFormula() {
+        const formulaList = this.formulaList.filter(item=> !item.id)
+        const { balanceSheetId } = this.editItem
+        const formulaListPromise = []
+
+
+        window.vtoast.loading(`正在新增`);
+        for (let i = 0; i < formulaList.length; i++) {
+          const item = formulaList[i];
+          formulaListPromise.push(window.jianghuAxios({
+            data: {
+              appData: {
+                pageId: 'assetsAndLiabilitiesManagement',
+                actionId: 'insertFormulaItem',
+                actionData: {
+                  balanceSheetId,
+                  subjectId: item.subjectId,
+                  countDirection: item.countDirection,
+                  accessRule: item.accessRule
+                },
+              }
+            }
+          }))
+        }
+        await Promise.all(formulaListPromise)
+
+        this.isAddDrawerShow = false
+        window.vtoast.success("批量新增成功");
+      },
+      async doDeleteFormulaItem({ item }) {
+        await window.jianghuAxios({
+          data: {
+            appData: {
+              pageId: 'assetsAndLiabilitiesManagement',
+              actionId: 'deleteFormulaItem',
+              actionData: {
+                id: item.id,
+              },
+            }
+          }
+        })
+      }
+    }
+  })
+</script>
+
+<style scoped>
+</style>
+{% endblock %}

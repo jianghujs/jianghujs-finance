@@ -27,8 +27,8 @@
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
   <v-row>
-    <v-col cols="2">
-      <v-card class="overflow-y-auto">
+    <v-col cols="3">
+      <v-card class="overflow-y-auto" style="max-height: 800px;">
         <v-sheet class="pa-4">
           <v-text-field
             v-model="search"
@@ -73,7 +73,7 @@
       </v-treeview>
       </v-card>
     </v-col>
-    <v-col cols="10">
+    <v-col cols="9">
       <v-card>
       <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
     
