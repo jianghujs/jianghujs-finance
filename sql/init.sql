@@ -89,10 +89,8 @@ CREATE TABLE `_page` (
 
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (2,'help','helpV3','帮助','dynamicInMenu','11','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (4,'login','loginV3','登陆','','','insert',NULL,NULL,NULL);
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (38,'createInvoice',NULL,'createInvoice【测试页面】','','3','insert',NULL,NULL,NULL);
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (39,'customerDetail',NULL,'Customer【测试页面】','','4','insert','vscode','vscode','2022-08-16T15:59:14+08:00');
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (40,'periodManagement',NULL,'会计期间','showInMenu','5','insert',NULL,NULL,NULL);
-INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (41,'subjectManagement',NULL,'科目设置','showInMenu','5','insert',NULL,NULL,NULL);
+INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (41,'subjectManagement',NULL,'科目管理','showInMenu','5','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (42,'voucherManagement',NULL,'凭证管理','showInMenu','5','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (43,'accountDetailsManagement',NULL,'科目账目明细','showInMenu','5','insert',NULL,NULL,NULL);
 INSERT INTO `_page` (`id`,`pageId`,`pageFile`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (44,'generalLedgerManagement',NULL,'总账','showInMenu','5','insert',NULL,NULL,NULL);
@@ -118,7 +116,7 @@ CREATE TABLE `_record_history` (
   PRIMARY KEY (`id`),
   KEY `index_record_id` (`recordId`),
   KEY `index_table_action` (`table`, `operation`)
-) ENGINE = InnoDB AUTO_INCREMENT = 27 COMMENT = '数据历史表';
+) ENGINE = InnoDB AUTO_INCREMENT = 31 COMMENT = '数据历史表';
 
 
 
@@ -435,7 +433,7 @@ CREATE TABLE `_user_session` (
   KEY `userId_index` (`userId`),
   KEY `userId_deviceId_index` (`userId`, `deviceId`) USING BTREE,
   KEY `authToken_index` (`authToken`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 COMMENT = '用户session表; deviceId 维度;软删除未启用;';
+) ENGINE = InnoDB AUTO_INCREMENT = 10 COMMENT = '用户session表; deviceId 维度;软删除未启用;';
 
 
 
@@ -1577,11 +1575,18 @@ CREATE TABLE `voucher` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 31 COMMENT = '凭证表';
+) ENGINE = InnoDB AUTO_INCREMENT = 42 COMMENT = '凭证表';
 
 
 
-INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (30,'记',1,'记-1','2022-11',2,'','系统管理员','','2022-11-09','insert',NULL,NULL,NULL);
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (31,'记',1002,'记-1002','2022-12',NULL,'','系统管理员','','2022-12-28','insert',NULL,NULL,NULL);
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (32,'记',1003,'记-1003','2022-12',NULL,'','系统管理员','','2022-12-28','insert',NULL,NULL,NULL);
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (33,'记',1004,'记-1004','2022-12',NULL,'','系统管理员','','2022-12-28','insert',NULL,NULL,NULL);
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (34,'记',1005,'记-1005','2022-12',NULL,'','系统管理员','','2022-12-28','insert',NULL,NULL,NULL);
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (35,'记',1006,'记-1006','2022-12',NULL,'','系统管理员','','2022-12-28','insert',NULL,NULL,NULL);
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (38,'记',1007,'记-1007','2022-12',NULL,'','系统管理员','','2022-12-28','insert',NULL,NULL,NULL);
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (40,'记',1008,'记-1008','2022-12',NULL,'','系统管理员','','2022-12-28','insert',NULL,NULL,NULL);
+INSERT INTO `voucher` (`id`,`voucherName`,`voucherNumber`,`voucherId`,`periodId`,`voucherAdditionalCount`,`voucherCreator`,`voucherAccountant`,`voucherAudit`,`voucherAt`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (41,'记',1009,'记-1009','2022-12',0,'','系统管理员','','2022-12-28','insert',NULL,NULL,NULL);
 
 
 
@@ -1603,14 +1608,27 @@ CREATE TABLE `voucher_entry` (
   `operationByUser` varchar(255) DEFAULT NULL COMMENT '操作者用户名',
   `operationAt` varchar(255) DEFAULT NULL COMMENT '操作时间; E.g: 2021-05-28T10:24:54+08:00 ',
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 47 COMMENT = '凭证条目表';
+) ENGINE = InnoDB AUTO_INCREMENT = 78 COMMENT = '凭证条目表';
 
 
 
-INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (43,'记-1','1401','印染机',20000.00,0.00,NULL,'insert',NULL,NULL,NULL);
-INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (44,'记-1','1403','印染机染料',2000.00,0.00,NULL,'insert',NULL,NULL,NULL);
-INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (45,'记-1','2202',NULL,0.00,22000.00,NULL,'insert',NULL,NULL,NULL);
-INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (46,'记-1',NULL,NULL,0.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (47,'记-1002','1002',NULL,12000.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (48,'记-1002','2711',NULL,0.00,12000.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (51,'记-1003','1011',NULL,359.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (52,'记-1003','2251',NULL,0.00,359.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (55,'记-1004','1407',NULL,430.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (56,'记-1004','4101',NULL,0.00,430.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (59,'记-1005','1407',NULL,24788.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (60,'记-1005','6032',NULL,0.00,24788.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (63,'记-1006','1001',NULL,34000.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (64,'记-1006','2004',NULL,0.00,34000.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (67,'记-1007','6101',NULL,0.00,5600.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (68,'记-1007','1511',NULL,3200.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (69,'记-1007','1015',NULL,2400.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (74,'记-1008','1404',NULL,3300.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (75,'记-1008','6401',NULL,0.00,3300.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (76,'记-1009','1002',NULL,10.00,0.00,NULL,'insert',NULL,NULL,NULL);
+INSERT INTO `voucher_entry` (`id`,`voucherId`,`subjectId`,`entryAbstract`,`debit`,`credit`,`balance`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) VALUES (77,'记-1009','6011',NULL,0.00,10.00,NULL,'insert',NULL,NULL,NULL);
 
 
 
