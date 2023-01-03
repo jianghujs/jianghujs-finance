@@ -10,7 +10,8 @@
   "dependencies": {
     "@jianghujs/jianghu": "3.0.81",
     "egg": "^2.15.1",
-    "egg-scripts": "^2.11.0"
+    "egg-scripts": "^2.11.0",
+    "lodash": "4.17.21"
   },
   "devDependencies": {
     "autod": "^3.0.1",
@@ -25,6 +26,7 @@
     "node": ">=10.0.0"
   },
   "scripts": {
+    "doc:subject": "node ./doc/subject/subject.js",
     "start": "egg-scripts start --daemon --port=9011 --title=jianghujs_demo_onetable",
     "stop": "egg-scripts stop --title=jianghujs_demo_onetable",
     "dev": "egg-bin dev --port=9011",
