@@ -1,21 +1,22 @@
-{% extends 'template/jhTemplateV3.html'%}
+{% extends 'template/jhTemplateV4.html'%}
 
 {% block vue_template %}
 
-<jh-layout-v3>
+<jh-layout-v4>
 
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
-      <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+      <v-col cols="12" xs="6" sm="4" md="3" xl="2" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
         <v-select prefix="会计期间" :items="periodList" item-text="periodId" item-value="periodId" hide-details dense filled multiple v-model="serverSearchInput.periodIds"></v-select>
       </v-col>
 
-      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
+      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 65px">
         <v-btn
           class="elevation-0"
           color="success"
           dark
           @click="doUiAction('refreshTableData')"
+          small
         >
           查询
         </v-btn>
@@ -25,16 +26,16 @@
 
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
-  <v-card>
+  <v-card class="rounded-lg">
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <span class="body-2">共{{ tableData.length }}条记录</span>
+        <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
       </v-col>
 
       <v-spacer></v-spacer>
 
-      <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+      <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
         <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
       </v-col>
     </v-row>
@@ -54,7 +55,7 @@
   </v-card>
 </v-container>
 
-</jh-layout-v3>
+</jh-layout-v4>
 
 {% endblock %}
 
@@ -81,7 +82,7 @@ new Vue({
     tableDataFromBackend: [],
     headers: [
       {text: "科目编码", value: "subjectId", width: 50}, 
-      {text: "科目名称", value: "subjectName", width: 120}, 
+      {text: "科目名称", value: "subjectName", width: 200}, 
       {text: "期初余额-借方", value: "debit", width: 80}, 
       {text: "期初余额-贷方", value: "credit", width: 80}, 
       {text: "本期发生额-借方", value: "debit", width: 80}, 
@@ -133,10 +134,11 @@ new Vue({
       const result = await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'generalLedgerManagement',
+            pageId: 'subjectManagement',
             actionId: 'selectItemList',
             actionData: {},
-            where: serverSearchInput,
+            where: {},
+            orderBy: [{column: 'subjectId', order: 'desc'}]
           }
         }
       });
@@ -164,7 +166,9 @@ new Vue({
       const { rows } = result.data.appData.resultData;
 
       this.periodList = rows;
-      this.serverSearchInput.periodId = rows[0].periodId
+      if(rows.length > 0){
+        this.serverSearchInput.periodId = rows[0].periodId
+      }
     },
   }
 })

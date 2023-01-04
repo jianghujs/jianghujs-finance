@@ -1,19 +1,19 @@
 <template id="profit-management-formula">
-  <v-container class="pa-0">
-    <v-card elevation="0" outlined>
+  <v-container class="px-4 py-0">
+    <v-card elevation="0">
+      <v-btn class="add-btn" @click="doUiAction('addItem')" small>添加公式</v-btn>
       <v-data-table height="500" :loading="loadingFormulaList" :headers="headers" :items="value" hide-default-footer
         class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
        
         <template v-slot:item.subject-id="{ item }">
-          <v-select :rules="requireRules" :items="subjectList" item-text="subjectName" item-value="subjectId" class="cus-v-input mr-2" dense filled single-line v-model="item.subjectId" :disabled="item.id"> </v-select>
+          <v-select :rules="requireRules" :items="subjectList" item-text="subjectName" item-value="subjectId" class="cus-v-input mr-2" dense filled single-line hide-details v-model="item.subjectId" :disabled="item.id"> </v-select>
         </template>
 
         <template v-slot:item.action="{ item, index }">
-          <v-btn small class="error" @click="doUiAction('deleteItem', {item, index})">删除</v-btn>
+          <v-btn x-small class="error" @click="doUiAction('deleteItem', {item, index})">删除</v-btn>
         </template>
       </v-data-table>
     </v-card>
-    <v-btn class="add-btn" @click="doUiAction('addItem')">添加公式</v-btn>
   </v-container>
 </template>
 

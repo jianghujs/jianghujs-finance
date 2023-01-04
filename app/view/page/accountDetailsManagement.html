@@ -1,22 +1,23 @@
-{% extends 'template/jhTemplateV3.html'%}
+{% extends 'template/jhTemplateV4.html'%}
 
 {% block vue_template %}
 
 
-<jh-layout-v3>
+<jh-layout-v4>
 
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
-      <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+      <v-col cols="12" xs="6" sm="4" md="3" xl="2" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
         <v-select prefix="会计期间" :items="periodList" item-text="periodId" item-value="periodId" hide-details dense filled multiple v-model="serverSearchInput.periodIds"></v-select>
       </v-col>
 
-      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
+      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 65px">
         <v-btn
           class="elevation-0"
           color="success"
           dark
           @click="doUiAction('refreshTableData')"
+          small
         >
           查询
         </v-btn>
@@ -27,63 +28,48 @@
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
   <v-row>
-    <v-col cols="3">
-      <v-card class="overflow-y-auto" style="max-height: 800px;">
-        <v-sheet class="pa-4">
-          <v-text-field
-            v-model="search"
-            label="过滤科目"
-            flat
-            solo-inverted
-            hide-details
-            clearable
-            clear-icon="mdi-close-circle-outline"
-          ></v-text-field>
-          <!-- <v-checkbox
-            v-model="caseSensitive"
-            hide-details
-            label="是否区分大小写"
-          ></v-checkbox> -->
-        </v-sheet>
+    <v-col cols="2" md="3" xl="2">
+        <v-text-field v-model="search" label="过滤科目" class="cus-v-input bg-white rounded-lg" dense filled single-line clearable></v-text-field>
 
-        <v-treeview
-          hoverable
-          activatable
-          dense
-          :active="defaultActiveSubjectId"
-          open-on-click
-          key="subjectId"
-          :items="subjectList"
-          item-text="subjectName"
-          item-key="subjectId"
-          color="primary"
-          :search="search"
-          :filter="filter"
-        >
-        <template v-slot:label="{ item }">
-          <div @click="doUiAction('handleTreeviewClick',{ item })">
-            {{item.subjectId}} {{item.subjectName}}
-          </div>
-        </template>
-        <template v-slot:prepend="{ item, open }">
-          <v-icon>
-            mdi-file
-          </v-icon>
-        </template>
-      </v-treeview>
-      </v-card>
+        <div class="overflow-y-auto mt-2 pr-1" style="max-height: 800px;border-right: 1px solid #EBEEF0;"> 
+          <v-treeview
+            hoverable
+            activatable
+            dense
+            :active="defaultActiveSubjectId"
+            open-on-click
+            key="subjectId"
+            :items="subjectList"
+            item-text="subjectName"
+            item-key="subjectId"
+            color="primary"
+            :search="search"
+            :filter="filter"
+          >
+            <template v-slot:label="{ item }">
+              <div @click="doUiAction('handleTreeviewClick',{ item })">
+                {{item.subjectId}} {{item.subjectName}}
+              </div>
+            </template>
+            <template v-slot:prepend="{ item, open }">
+              <v-icon color="#1F272E" style="font-size: 18px;">
+                mdi-file-document-outline
+              </v-icon>
+            </template>
+          </v-treeview>
+        </div>
     </v-col>
-    <v-col cols="9">
-      <v-card>
+    <v-col cols="10" md="9" xl="10">
+      <v-card class="rounded-lg">
       <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
     
           <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-            <span class="body-2">共{{ tableData.length }}条记录</span>
+            <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
           </v-col>
     
           <v-spacer></v-spacer>
     
-          <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+          <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
             <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
           </v-col>
         </v-row>
@@ -104,7 +90,7 @@
 </v-container>
 
 
-</jh-layout-v3>
+</jh-layout-v4>
 
 {% endblock %}
 

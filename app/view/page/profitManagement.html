@@ -40,7 +40,7 @@
             :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
     
             <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-              <span class="body-2">共{{ tableData.length }}条记录</span>
+              <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
             </v-col>
     
             <v-spacer></v-spacer>
@@ -73,19 +73,19 @@
   <!-- 新增 -->
   <v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%"
     class="elevation-24">
-    <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">新增公式</span>
+    <v-row>
+      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">新增公式</span>
       <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isAddDrawerShow = false">
+      <v-btn class="mt-6 elevation-0 mr-8" fab x-small @click="isAddDrawerShow = false">
         <v-icon dark>mdi-close</v-icon>
       </v-btn>
     </v-row>
     <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
       <profit-management-formula v-model="formulaList" :subjectList="subjectList" :loadingFormulaList="loadingFormulaList" @doDeleteItem="doUiAction('doDeleteFormulaItem', { item: $event})" />
       
-      <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-        <v-btn class="ml-2" color="success" @click="doUiAction('doSubmitFormula')">提交</v-btn>
-        <v-btn class="ml-2" @click="isAddDrawerShow = false">取消</v-btn>
+      <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
+        <v-btn class="ml-2" @click="isAddDrawerShow = false" small>取消</v-btn>
+        <v-btn class="ml-2" color="success" @click="doUiAction('doSubmitFormula')" small>提交</v-btn>
       </v-row>
     </v-form>
 

@@ -1,21 +1,22 @@
-{% extends 'template/jhTemplateV3.html'%}
+{% extends 'template/jhTemplateV4.html'%}
 
 {% block vue_template %}
 
-<jh-layout-v3>
+<jh-layout-v4>
 
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
-      <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+      <v-col cols="12" xs="6" sm="4" md="3" xl="2" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
         <v-select prefix="会计期间" :items="periodList" item-text="periodId" item-value="periodId" hide-details dense filled v-model="serverSearchInput.periodId"></v-select>
       </v-col>
 
-      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
+      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 65px">
         <v-btn
           class="elevation-0"
           color="success"
           dark
           @click="doUiAction('refreshTableData')"
+          small
         >
           查询
         </v-btn>
@@ -25,11 +26,11 @@
 
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
-  <v-card>
+  <v-card class="rounded-lg">
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
-      <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <span class="body-2">共{{ tableData.length }}条记录</span>
+      <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pl-0">
+        <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
       </v-col>
 
       <v-spacer></v-spacer>
@@ -54,7 +55,7 @@
   </v-card>
 </v-container>
 
-</jh-layout-v3>
+</jh-layout-v4>
 
 {% endblock %}
 
@@ -169,7 +170,9 @@ new Vue({
       const { rows } = result.data.appData.resultData;
 
       this.periodList = rows;
-      this.serverSearchInput.periodId = rows[0].periodId
+      if(rows.length > 0){
+        this.serverSearchInput.periodId = rows[0].periodId
+      }
     },
   }
 })

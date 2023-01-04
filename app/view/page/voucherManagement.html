@@ -1,4 +1,4 @@
-{% extends 'template/jhTemplateV3.html'%}
+{% extends 'template/jhTemplateV4.html'%}
 
 {% block vue_template %}
 
@@ -16,11 +16,11 @@ INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`
 INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'voucherManagement','deleteItem','✅查询-删除信息','sql','{}','{ \"table\": \"voucher\", \"operation\": \"delete\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='voucherManagement' AND `actionId`='deleteItem');
 SQL END!-->
 
-<jh-layout-v3>
+<jh-layout-v4>
 
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
-      <v-col cols="12" sm="10" xs="8" md="5" xl="3" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+      <v-col cols="12" xs="6" sm="4" md="3" xl="2" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
         <v-select prefix="会计期间" 
           :items="periodList" 
           v-model="serverSearchInput.periodId"
@@ -31,12 +31,13 @@ SQL END!-->
           ></v-select>
       </v-col>
 
-      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
+      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 65px">
         <v-btn
           class="elevation-0"
           color="success"
           dark
           @click="doUiAction('refreshTableData')"
+          small
         >
           查询
         </v-btn>
@@ -46,17 +47,17 @@ SQL END!-->
 
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
-  <v-card>
+  <v-card class="rounded-lg">
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')">录入凭证</v-btn>
-        <span class="body-2">共{{ tableData.length }}条记录</span>
+        <v-btn color="success" dark class="elevation-0 mr-2" small @click="doUiAction('startCreateItem')">录入凭证</v-btn>
+        <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
       </v-col>
 
       <v-spacer></v-spacer>
 
-      <v-col cols="12" xs="3" sm="3" md="2" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+      <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
         <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
       </v-col>
     </v-row>
@@ -74,10 +75,10 @@ SQL END!-->
 
       <template v-slot:group.header="{items, isOpen, toggle, remove}">
         <td>
-          <v-icon @click="toggle">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+          <v-icon @click="toggle" color="#1F272E" style="font-size: 18px;">{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
      
-          <span class="text-subtitle-2">{{ items[0].voucherId }}</span>
-          <span class="text-subtitle-2 ml-2"> {{ items[0].voucherAt }}</span>
+          <span >{{ items[0].voucherId }}</span>
+          <span class="ml-2"> {{ items[0].voucherAt }}</span>
         </td>
        
       </template>
@@ -103,10 +104,10 @@ SQL END!-->
 <!-- 录入凭证 -->
 <v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%" class="elevation-24">
   <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
-    <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">录入凭证</span>
+    <v-row>
+      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">录入凭证</span>
       <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isAddDrawerShow = false">
+      <v-btn class="mt-6 elevation-0 mr-8" fab x-small @click="isAddDrawerShow = false">
         <v-icon dark>mdi-close</v-icon>
       </v-btn>
     </v-row>
@@ -138,7 +139,7 @@ SQL END!-->
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 :rules="requireRules"
-                class="enhancer-voucher-date"
+                class="enhancer-voucher-date pl-1"
                 single-line
                 v-model="addItem['voucherAt']"
                 label=""
@@ -163,15 +164,15 @@ SQL END!-->
       </div>
       <voucher-management-entry v-model="voucherEntryList" :subject-list="subjectList" :rules="voucherEntryRules"/>
     </v-row>
-    <v-row class="justify-end pr-6">
-      <v-btn color="success" @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">确定</v-btn>
-      <v-btn class="ml-2" @click="isAddDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
+    <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
+      <v-btn class="ml-2" small  @click="isAddDrawerShow = false">取消</v-btn>
+      <v-btn class="ml-2" color="success" small @click="doUiAction('createItem')">提交</v-btn>
     </v-row>
   </v-form>
 </v-navigation-drawer>
 
 
-</jh-layout-v3>
+</jh-layout-v4>
 
 {% endblock %}
 
@@ -466,7 +467,7 @@ new Vue({
   .enhancer-voucher-header .enhancer-voucher-char-wrap .enhancer-voucher-no { border: 1px solid #eee; line-height: 30px;width: 80px; padding-left: 4px; position: relative; text-align: left; }
   .enhancer-voucher-header .enhancer-voucher-date-wrap { float: left; margin-left: 12px; position: relative; display: inline-block; }
   .enhancer-voucher-header .enhancer-voucher-date-wrap .enhancer-voucher-date { border: 1px solid #eee; height: 32px;margin-left: 2px; display: inline-block; margin: 0; padding: 0; }
-  .enhancer-voucher-header .enhancer-voucher-title { font-size: 18px; width: 100px; height: 18px; line-height: 18px; position: absolute; left: 50%; top: 50%; margin-left: -50px; margin-top: -9px; }
+  .enhancer-voucher-header .enhancer-voucher-title { font-size: 15px; width: 100px; height: 18px; line-height: 18px; position: absolute; left: 50%; top: 50%; margin-left: -50px; margin-top: -9px; }
   .enhancer-voucher-header .enhancer-voucher-attachments-wrap { float: right; padding: 0 5px; }
   .enhancer-voucher-header .enhancer-voucher-attachments-wrap .enhancer-voucher-attachments { width: 32px; border: 1px solid #eee; line-height: 30px; }
   .enhancer-voucher-header .

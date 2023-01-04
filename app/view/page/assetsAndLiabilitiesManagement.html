@@ -1,8 +1,8 @@
-{% extends 'template/jhTemplateV3.html'%}
+{% extends 'template/jhTemplatev4.html'%}
 
 {% block vue_template %}
 
-<jh-layout-v3>
+<jh-layout-v4>
 <!-- 
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}"
@@ -25,18 +25,18 @@
 
     <v-row>
       <v-col cols="6">
-        <v-card>
+        <v-card class="rounded-lg">
           <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 "
             :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
     
             <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-              <span class="text-h6">资产</span>
-              <span class="body-2">共{{ assetData.length }}条记录</span>
+              <span style="font-size: 14px;font-weight: 500;">资产</span>
+              <span style="font-size: 13px;">共{{ assetData.length }}条记录</span>
             </v-col>
     
             <v-spacer></v-spacer>
     
-            <v-col cols="12" xs="6" sm="6" md="4" xl="4" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+            <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
               <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line>
               </v-text-field>
             </v-col>
@@ -62,13 +62,13 @@
             :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
     
             <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-              <span class="text-h6">负债</span>
-              <span class="body-2">共{{ liabilitiesData.length }}条记录</span>
+              <span style="font-size: 14px;font-weight: 500;">负债</span>
+              <span style="font-size: 13px;">共{{ liabilitiesData.length }}条记录</span>
             </v-col>
     
             <v-spacer></v-spacer>
     
-            <v-col cols="12" xs="6" sm="6" md="4" xl="4" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+            <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
               <v-text-field v-model="liabilitiesSearchInput" label="表格过滤" class="cus-v-input" dense filled single-line>
               </v-text-field>
             </v-col>
@@ -96,24 +96,24 @@
   <!-- 新增 -->
   <v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%"
     class="elevation-24">
-    <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">新增公式</span>
+    <v-row>
+      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">新增公式</span>
       <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isAddDrawerShow = false">
+      <v-btn class="mt-6 elevation-0  mr-8" fab x-small @click="isAddDrawerShow = false">
         <v-icon dark>mdi-close</v-icon>
       </v-btn>
     </v-row>
     <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
       <assets-and-liabilities-management-formula v-model="formulaList" :subjectList="subjectList" :loadingFormulaList="loadingFormulaList" @doDeleteItem="doUiAction('doDeleteFormulaItem', { item: $event})" />
       
-      <v-row class="justify-end mx-0 mt-8" :class="{'px-10': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-        <v-btn class="ml-2" color="success" @click="doUiAction('doSubmitFormula')">提交</v-btn>
-        <v-btn class="ml-2" @click="isAddDrawerShow = false">取消</v-btn>
+      <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
+        <v-btn class="ml-2" small @click="isAddDrawerShow = false">取消</v-btn>
+        <v-btn class="ml-2" small color="success" @click="doUiAction('doSubmitFormula')">提交</v-btn>
       </v-row>
     </v-form>
 
   </v-navigation-drawer>
-</jh-layout-v3>
+</jh-layout-v4>
 
 {% endblock %}
 
