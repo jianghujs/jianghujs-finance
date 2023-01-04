@@ -19,9 +19,9 @@ module.exports = {
     _user_group_role_ui_level: '_user_group_role_ui_level',
     _user_session: '_user_session',
     // ========================应用表============================
+    period: 'period',
     voucher: 'voucher',
     voucher_entry: 'voucher_entry',
-    period: 'period',
     subject: 'subject',
     subject_balance: 'subject_balance',
     profit_formula: 'profit_formula',

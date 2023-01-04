@@ -2,52 +2,36 @@
 
 {% block vue_template %}
 
-<!-- 3 table 下  的单表 crud 页面 -->
+<jh-layout-v3>
 
-<!--SQL START
--- 以下为 jianghu init 工具生成的参考 SQL，使用后删除
--- 创建 page
-INSERT INTO `_page` (`pageId`,`pageName`,`pageType`,`sort`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT 'periodManagement','页面','showInMenu','5','jhInsert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_page` WHERE `pageId`='periodManagement');
+<template slot="serverSearch">
+  <v-row 
+    class="ma-0 align-center flex-none pa-0" 
+    :class="{'pa-2': !isMobile, 'pa-2': isMobile}"
+    style="justify-content: end">
 
--- 创建 resource
-INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'periodManagement','selectItemList','✅查询-查询列表','sql','{}','{ \"table\": \"period\", \"operation\": \"select\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='periodManagement' AND `actionId`='selectItemList');
-INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'periodManagement','insertItem','✅查询-添加成员','sql','{}','{ \"table\": \"period\", \"operation\": \"insert\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='periodManagement' AND `actionId`='insertItem');
-INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'periodManagement','updateItem','✅查询-更新成员','sql','{}','{ \"table\": \"period\", \"operation\": \"update\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='periodManagement' AND `actionId`='updateItem');
-INSERT INTO `_resource` (`accessControlTable`,`resourceHook`,`pageId`,`actionId`,`desc`,`resourceType`,`appDataSchema`,`resourceData`,`requestDemo`,`responseDemo`,`operation`,`operationByUserId`,`operationByUser`,`operationAt`) SELECT NULL,NULL,'periodManagement','deleteItem','✅查询-删除信息','sql','{}','{ \"table\": \"period\", \"operation\": \"delete\" }','','','insert',NULL,NULL,NULL FROM DUAL WHERE NOT EXISTS (SELECT `pageId` FROM `_resource` WHERE `pageId`='periodManagement' AND `actionId`='deleteItem');
-SQL END!-->
+    <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
+      <v-btn 
+        color="success" 
+        dark 
+        class="elevation-0 mr-2" 
+        @click="doUiAction('startCheckoutItem')">
+        结账
+      </v-btn>
+    </v-col>
+  </v-row>
+</template> 
 
-<jh-layout-v4>
-
-<!--   <template slot="serverSearch">
-    <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
-      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 77px">
-        <v-btn
-          class="elevation-0"
-          color="success"
-          dark
-          @click="doUiAction('refreshTableData')"
-        >
-          查询
-        </v-btn>
-      </v-col>
-    </v-row>
-  </template>-->
-
-<!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
   <v-card class="rounded-lg">
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')" small>新增</v-btn>
-        <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
+        <span class="body-2">共{{ tableData.length }}条记录</span>
       </v-col>
 
       <v-spacer></v-spacer>
 
-      <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
-        <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
-      </v-col>
     </v-row>
     <v-data-table fixed-header
                   :headers="headers"
@@ -59,103 +43,65 @@ SQL END!-->
                   :loading="isTableLoading"
                   checkbox-color="success"
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-      <template v-slot:item.action="{ item }">
-        <v-btn @click="doUiAction('startUpdateItem', {item})" x-small>修改</v-btn>
-      </template>
     </v-data-table>
   </v-card>
 </v-container>
 
 <!-- 新增 -->
-<v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%" class="elevation-24">
-  <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
-    <v-row>
-      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">新增</span>
+<v-navigation-drawer v-model="isCheckoutDrawerShow" :permanent="isCheckoutDrawerShow" fixed temporary right width="80%" class="elevation-24">
+  <v-form v-model="isFormValid" v-if="isCheckoutDrawerShow" ref="form" lazy-validation>
+    <v-row class="pt-8">
+      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">结账</span>
       <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0 mr-8" fab x-small @click="isAddDrawerShow = false">
+      <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isCheckoutDrawerShow = false">
         <v-icon dark>mdi-close</v-icon>
       </v-btn>
     </v-row>
     <v-row :class="{'px-6': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}" class="mt-0">
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计期间（如2022-11）</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['periodId']"></v-text-field>
+        <v-menu
+          v-if="!checkoutItem['periodId']"
+          v-model="isPeriodIdMenuShow"
+          :close-on-content-click="false"
+          :nudge-right="40"
+          transition="scale-transition"
+          offset-y
+          min-width="auto">
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              prefix="会计期间:" 
+              :rules="requireRules"
+              single-line
+              v-model="checkoutItem['periodId']"
+              class="cus-v-input "
+              label=""
+              readonly
+              v-bind="attrs"
+              v-on="on"
+            ></v-text-field>
+          </template>
+          <v-date-picker
+            v-model="checkoutItem['periodId']"
+            @input="isPeriodIdMenuShow = false"
+          ></v-date-picker>
+        </v-menu>
+        <v-text-field 
+          v-if="checkoutItem['periodId']"
+          class="cus-v-input " prefix="结账到:" 
+          dense filled single-line readonly
+          v-model="checkoutItem['periodId']">
+        </v-text-field>
       </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">是否结算</span>
-        <v-select 
-          v-model="addItem.isCheckout" 
-          :items="constantCollection.isCheckout" 
-          class="cus-v-input"
-          dense filled></v-select>
-      </v-col>
-       
     </v-row>
-    <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-      <v-btn class="ml-2" @click="isAddDrawerShow = false" small >取消</v-btn>
-      <v-btn class="ml-2" color="success" @click="doUiAction('createItem')" small >提交</v-btn>
+    <v-row class="justify-end pr-6">
+      <v-btn color="success" @click="doUiAction('checkout')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">确定</v-btn>
+      <v-btn class="ml-2" @click="isCheckoutDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
     </v-row>
   </v-form>
 </v-navigation-drawer>
 
-
-<!-- 编辑抽屉 -->
-<v-navigation-drawer v-model="isEditDrawerShow" :permanent="isEditDrawerShow" fixed temporary right width="80%" class="elevation-24">
-  <v-form v-model="isFormValid" v-if="isEditDrawerShow" ref="form" lazy-validation>
-    <v-row>
-      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">修改</span>
-      <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0 mr-8" fab x-small @click="isEditDrawerShow = false">
-        <v-icon dark>mdi-close</v-icon>
-      </v-btn>
-    </v-row>
-    <v-row :class="{'px-6': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}" class="mt-0">
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">会计期间</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['periodId']" disabled="true"></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">是否结算</span>
-        <v-select 
-          v-model="editItem.isCheckout" 
-          :items="constantCollection.isCheckout" 
-          class="cus-v-input"
-          dense filled></v-select>
-      </v-col>
-       
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--        &lt;!&ndash; 必填字段样式 demo :rules="requireRules" &ndash;&gt;-->
-<!--            <span class="inputLabel">学生ID</span>-->
-<!--        <v-text-field class="cus-v-input " dense filled single-line label="学生ID" v-model="editItem.studentId" :rules="requireRules"></v-text-field>-->
-<!--      </v-col>-->
-<!--      &lt;!&ndash; select 字段 demo &ndash;&gt;-->
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--            <span class="inputLabel">班级ID</span>-->
-<!--        <v-select class="cus-v-input " dense filled single-line clearable label="班级ID" v-model="editItem.classId" :items="constantCollection.classId"></v-select>-->
-<!--      </v-col>-->
-<!--      &lt;!&ndash; 日期选择 demo &ndash;&gt;-->
-<!--      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">-->
-<!--        <span class="inputLabel">出生日期</span>-->
-<!--        <v-menu class="cus-v-input " offset-y max-width="290">-->
-<!--          <template v-slot:activator="{ on, attrs }">-->
-<!--            <v-text-field class="cus-v-input " dense filled single-line v-on="on" label="出生日期" v-model="editItem.dateOfBirth"></v-text-field>-->
-<!--          </template>-->
-<!--          <v-date-picker color="success" elevation="20" v-model="editItem.dateOfBirth"></v-date-picker>-->
-<!--        </v-menu>-->
-<!--      </v-col>-->
-    </v-row>
-    <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-      <v-btn class="ml-2" @click="isEditDrawerShow = false" small>取消</v-btn>
-      <v-btn class="ml-2" color="success" @click="doUiAction('updateItem')" small>保存</v-btn>
-    </v-row>
-  </v-form>
-</v-navigation-drawer>
-
-</jh-layout-v4>
+</jh-layout-v3>
 
 {% endblock %}
 
@@ -173,10 +119,6 @@ new Vue({
       v => !!v || 'This is required',
     ],
     constantCollection: {
-      isCheckout: [
-        {text: '未结算', value: '未结算'},
-        {text: '已结算', value: '已结算'},
-      ]
     },
 
     serverSearchInput: {
@@ -189,12 +131,11 @@ new Vue({
     headers: [
       {text: "会计期间", value: "periodId", width: 120, class: 'fixed', cellClass: 'fixed'}, 
       {text: "是否结算", value: "isCheckout", width: 120}, 
-      {text: '操作', value: 'action', align: 'center', sortable: false, width: 120, class: 'fixed', cellClass: 'fixed'},
     ],
-    isEditDrawerShow: false,
-    editItem: {},
-    isAddDrawerShow: false,
-    addItem: {}
+    isCheckoutDrawerShow: false,
+    checkoutItem: {},
+
+    isPeriodIdMenuShow: false,
   }),
   computed: {
     isMobile() {
@@ -215,31 +156,15 @@ new Vue({
         case 'refreshTableData':
           await this.refreshTableData();
           break;
-        case 'startCreateItem':
+        case 'startCheckoutItem':
           await this.clearItemData();
-          await this.openCreateItemDialog();
+          await this.openCheckoutItemDialog();
           break;
-        case 'createItem':
+        case 'checkout':
           await this.prepareValidate();
-          await this.confirmCreateItemDialog();
-          await this.doCreateItem();
+          await this.confirmCheckoutItemDialog();
+          await this.doCheckout();
           await this.closeDrawerShow();
-          await this.refreshTableData();
-          break;
-        case 'startUpdateItem':
-          await this.prepareItemData(uiActionData);
-          await this.openUpdateDialog();
-          break;
-        case 'updateItem':
-          await this.prepareValidate();
-          await this.confirmUpdateItemDialog();
-          await this.doUpdateItem();
-          await this.closeDrawerShow();
-          await this.refreshTableData();
-          break;
-        case 'deleteItem':
-          await this.confirmDeleteItemDialog();
-          await this.doDeleteItem(uiActionData);
           await this.refreshTableData();
           break;
         default:
@@ -287,42 +212,48 @@ new Vue({
 
 
     /**
-     * uiActionId:  startCreateItem
+     * uiActionId:  startCheckoutItem
      * description: ✅获取表格数据
     */
     async clearItemData() {
-      this.addItem = {};
+      this.checkoutItem = {};
+      if (this.tableDataFromBackend.length === 0){
+        this.checkoutItem.periodId = null;
+        return;
+      }
+
+      const currentPeriodId = this.tableDataFromBackend[0].periodId;
+      this.checkoutItem.periodId = dayjs(currentPeriodId).add(1, 'month').format("YYYY-MM");
     },
-    async openCreateItemDialog() {
-      this.isAddDrawerShow = true;
+    async openCheckoutItemDialog() {
+      this.isCheckoutDrawerShow = true;
     },
 
     /**
-     * uiActionId:  createItem
+     * uiActionId:  checkoutItem
      * description: ✅获取表格数据
     */
-    async confirmCreateItemDialog() {
+    async confirmCheckoutItemDialog() {
       if (await window.confirmDialog({title: "新增", content: "确定新增吗？"}) === false) {
         throw new Error("取消");
       }
     },
-    async doCreateItem() {
-      const { id, ...data } = this.addItem;
-      await window.vtoast.loading("新增数据");
+    async doCheckout() {
+      const { id, ...data } = this.checkoutItem;
+      await window.vtoast.loading("结算");
       await window.jianghuAxios({
         data: {
           appData: {
             pageId: 'periodManagement',
-            actionId: 'insertItem',
+            actionId: 'checkout',
             actionData: data
           }
         }
       })
-      await window.vtoast.success("新增数据成功");
+      await window.vtoast.success("结算成功");
     },
     async closeDrawerShow() {
-      this.isEditDrawerShow = false;
-      this.isAddDrawerShow = false;
+      this.isCheckoutDrawerShow = false;
     },
 
     /**
@@ -334,55 +265,6 @@ new Vue({
     },
     async openUpdateDialog() {
       this.isEditDrawerShow = true;
-    },
-    /**
-     * uiActionId:  updateItem
-     * description: ✅获取表格数据
-    */
-    async confirmUpdateItemDialog() {
-      if (await window.confirmDialog({title: "修改", content: "确定修改吗？"}) === false) {
-        throw new Error("取消");
-      }
-    },
-    async doUpdateItem() {
-      const { id, ...data } = this.editItem;
-      await window.vtoast.loading("修改数据");
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'periodManagement',
-            actionId: 'updateItem',
-            actionData: data,
-            where: {id}
-          }
-        }
-      })
-      await window.vtoast.success("修改数据成功");
-    },
-
-    /**
-     * uiActionId:  deleteItem
-     * description: ✅获取表格数据
-    */
-    async confirmDeleteItemDialog() {
-      if (await window.confirmDialog({title: "删除", content: "确定删除吗？"}) === false) {
-        throw new Error("取消");
-      }
-    },
-    async doDeleteItem({item}) {
-      const { id } = item;
-      await window.vtoast.loading("删除数据");
-      await window.jianghuAxios({
-        data: {
-          appData: {
-            pageId: 'periodManagement',
-            actionId: 'deleteItem',
-            actionData: {},
-            where: { id: id }
-          }
-        }
-      });
-      await window.vtoast.success("删除数据成功");
     },
   }
 })
