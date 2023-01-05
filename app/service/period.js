@@ -33,6 +33,14 @@ class PeriodService extends Service {
 
   }
 
+
+  async reCheckoutAllPeriod() {
+    const ctx = this.ctx;
+    const { jianghuKnex } = this.app;
+  }
+
+  
+
 }
 
 module.exports = PeriodService;
