@@ -241,7 +241,7 @@ new Vue({
   async created() {
     await Promise.all([
       this.doUiAction('refreshTableData'),
-      this.doUiAction('getPeriodList'),
+      this.doUiAction('selectPeriodList'),
       this.doUiAction('getSubjectList'),
       // Tip: 测试代码
       // this.doUiAction('startCreateItem'),
@@ -255,8 +255,8 @@ new Vue({
         case 'refreshTableData':
           await this.refreshTableData();
           break;
-        case 'getPeriodList':
-          await this.getPeriodList();
+        case 'selectPeriodList':
+          await this.selectPeriodList();
           break;
         case 'getSubjectList':
           await this.getSubjectList();
@@ -316,7 +316,7 @@ new Vue({
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
-    async getPeriodList() {
+    async selectPeriodList() {
       const result = await window.jianghuAxios({
         data: {
           appData: {

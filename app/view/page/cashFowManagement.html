@@ -114,7 +114,7 @@
     async created() {
       await Promise.all([
         this.doUiAction('refreshTableData'),
-        this.doUiAction('getPeriodList'),
+        this.doUiAction('selectPeriodList'),
         this.doUiAction('getSubjectList'),
       ])
     },
@@ -125,8 +125,8 @@
           case 'refreshTableData':
             await this.refreshTableData();
             break;
-          case 'getPeriodList':
-            await this.getPeriodList();
+          case 'selectPeriodList':
+            await this.selectPeriodList();
             break;
           case 'getSubjectList':
             await this.getSubjectList();
@@ -188,7 +188,7 @@
         this.isTableLoading = false;
       },
       // =================================uiAction 公共方法 end ======================================
-      async getPeriodList() {
+      async selectPeriodList() {
         const result = await window.jianghuAxios({
           data: {
             appData: {

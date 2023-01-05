@@ -157,7 +157,7 @@ new Vue({
 
     await Promise.all([
       this.doUiAction('getSubjectList'),
-      this.doUiAction('getPeriodList'),
+      this.doUiAction('selectPeriodList'),
     ]);
     await this.doUiAction('refreshTableData');
   },
@@ -171,8 +171,8 @@ new Vue({
         case 'getSubjectList':
           await this.getSubjectList();
           break;
-        case 'getPeriodList':
-          await this.getPeriodList();
+        case 'selectPeriodList':
+          await this.selectPeriodList();
           break;
         case 'handleTreeviewClick':
           this.handleTreeviewClick(uiActionData);
@@ -241,7 +241,7 @@ new Vue({
       this.defaultActiveSubjectId = [rows[0].subjectId]
     },
 
-    async getPeriodList() {
+    async selectPeriodList() {
       const result = await window.jianghuAxios({
         data: {
           appData: {

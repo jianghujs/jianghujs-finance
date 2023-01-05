@@ -104,7 +104,7 @@ new Vue({
   },
   watch: {},
   async created() {
-    await this.doUiAction('getPeriodList')
+    await this.doUiAction('selectPeriodList')
     await this.doUiAction('refreshTableData')
   },
   mounted() {},
@@ -114,8 +114,8 @@ new Vue({
         case 'refreshTableData':
           await this.refreshTableData();
           break;
-        case 'getPeriodList':
-          await this.getPeriodList();
+        case 'selectPeriodList':
+          await this.selectPeriodList();
           break;
         default:
           console.error("[doUiAction] uiActionId not find", { uiActionId });
@@ -151,7 +151,7 @@ new Vue({
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
-    async getPeriodList() {
+    async selectPeriodList() {
       const result = await window.jianghuAxios({
         data: {
           appData: {
