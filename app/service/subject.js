@@ -222,6 +222,9 @@ class SubjectService extends Service {
   //     rows
   //   }
   // }
+
+  async updateSubjectBalanceListForPeriodIdFirst() {
+  }
 }
 
 module.exports = SubjectService;

@@ -44,7 +44,7 @@
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <span class="title">{{ periodIdFirst }}</span>
+        <span class="title">初始会计期间: {{ periodIdFirst }}</span>
         <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
       </v-col>
 
@@ -64,9 +64,17 @@
                   :loading="isTableLoading"
                   checkbox-color="success"
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-      <template v-slot:item.action="{ item }">
-        <v-btn x-small @click="doUiAction('startUpdateItem', {item})">修改</v-btn>
-        <!-- <v-btn small class=" error" @click="doUiAction('deleteItem', {item})">删除</v-btn> -->
+      <template v-slot:item.periodStartBalance="{ item }">
+        <v-text-field class="cus-v-input mr-2" dense filled single-line 
+          v-model.number="item.periodStartBalance" type="number"></v-text-field>
+      </template>
+      <template v-slot:item.debit="{ item }">
+        <v-text-field class="cus-v-input mr-2" dense filled single-line 
+          v-model.number="item.debit" type="number"></v-text-field>
+      </template>
+      <template v-slot:item.credit="{ item }">
+        <v-text-field class="cus-v-input mr-2" dense filled single-line 
+          v-model.number="item.credit" type="number"></v-text-field>
       </template>
     </v-data-table>
   </v-card>
@@ -112,14 +120,10 @@ new Vue({
       {text: "科目名称", value: "subjectName", width: 250, class: 'fixed', cellClass: 'fixed'}, 
       {text: "科目分类", value: "subjectCategory", width: 100}, 
       {text: "科目余额方向", value: "subjectBalanceDirection", width: 80}, 
-      {text: "期初余额-借方", value: "debit", width: 80}, 
-      {text: "期初余额-贷方", value: "credit", width: 80}, 
-      {text: "本期发生额-借方", value: "debit", width: 80}, 
-      {text: "本期发生额-贷方", value: "credit", width: 80}, 
-      {text: "本年累计发生额-借方", value: "debit", width: 80}, 
-      {text: "本年累计发生额-贷方", value: "credit", width: 80}, 
-      {text: "期末余额-借方", value: "debit", width: 80}, 
-      {text: "期末余额-贷方", value: "credit", width: 80}, 
+      {text: "期初余额", value: "periodStartBalance", width: 120}, 
+      {text: "借方", value: "debit", width: 120}, 
+      {text: "贷方", value: "credit", width: 120}, 
+      {text: "年初余额", value: "occurAmount", width: 120}, 
     ],
 
   }),
@@ -184,7 +188,12 @@ new Vue({
     async refreshTableData({ subjectCategory }) {
       this.isTableLoading = true;
       this.selectSubjectCategory = subjectCategory;
-      const where = {};
+      if (!this.periodIdFirst) {
+        this.isTableLoading = false;
+        window.vtoast.fail({ message: "请创建第一个会计期间!" });
+        throw new Error("[refreshTableData] false");
+      }
+      const where = { periodId: this.periodIdFirst };
       if (subjectCategory) {
         where.subjectCategory = this.selectSubjectCategory;
       }
@@ -192,7 +201,7 @@ new Vue({
         data: {
           appData: {
             pageId: 'subjectBalanceFirstManagement',
-            actionId: 'selectItemList',
+            actionId: 'selectSubjectBalanceList',
             actionData: {},
             where,
             orderBy: [{column: 'subjectId', order: 'asc'}]
@@ -206,8 +215,21 @@ new Vue({
     },
     // =================================uiAction 公共方法 end ======================================
     async updateSubjectBalanceFirst({}) {
+      await window.vtoast.loading("保存");
+      await window.jianghuAxios({
+        data: {
+          appData: {
+            pageId: 'subjectBalanceFirstManagement',
+            actionId: 'updateSubjectBalanceListForPeriodIdFirst',
+            actionData: {},
+            orderBy: [{column: 'subjectId', order: 'asc'}]
+          }
+        }
+      });
+      await window.vtoast.success("保存成功");
     },
     async checkSubjectBalanceFirst({}) {
+      // TODO: ConfirmDailog 展示 平衡数据数据
     },
   }
 })
