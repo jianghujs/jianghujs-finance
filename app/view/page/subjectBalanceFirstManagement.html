@@ -54,101 +54,6 @@
   </v-card>
 </v-container>
 
-<!-- 新增 -->
-<v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%" class="elevation-24">
-  <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
-    <v-row>
-      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">新增科目</span>
-      <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0 mr-8" fab x-small @click="isAddDrawerShow = false">
-        <v-icon dark>mdi-close</v-icon>
-      </v-btn>
-    </v-row>
-    <v-row :class="{'px-6': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}" class="mt-0">
-     
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目编码</span>
-        <v-text-field class="cus-v-input " dense filled single-line 
-          v-model="addItem['subjectId']"
-          :rules="[
-            v => !!v || '必填',
-            v => tableDataFromBackend.findIndex(item => item.subjectId == v) === -1 || '科目编码已存在',
-          ]"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目名称</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['subjectName']"
-          :rules="[
-            v => !!v || '必填',
-            v => tableDataFromBackend.findIndex(item => item.subjectName == v) === -1 || '科目名称已存在',
-          ]"
-        ></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目分类</span>
-        <v-select :items="constantCollection.subjectCategory" dense filled single-line v-model="addItem['subjectCategory']"
-          :rules="requireRules"></v-select>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目余额方向</span>
-        <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="addItem['subjectBalanceDirection']"
-          :rules="requireRules"></v-select>
-      </v-col>
-    </v-row>
-    <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-      <v-btn class="ml-2" @click="isAddDrawerShow = false" small>取消</v-btn>
-      <v-btn class="ml-2" color="success" @click="doUiAction('createItem')" small>提交</v-btn>
-    </v-row>
-  </v-form>
-</v-navigation-drawer>
-
-
-<!-- 编辑抽屉 -->
-<v-navigation-drawer v-model="isEditDrawerShow" :permanent="isEditDrawerShow" fixed temporary right width="80%" class="elevation-24">
-  <v-form v-model="isFormValid" v-if="isEditDrawerShow" ref="form" lazy-validation>
-    <v-row>
-      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">修改</span>
-      <v-spacer></v-spacer>
-      <v-btn class="mt-6 elevation-0 mr-8" fab x-small @click="isEditDrawerShow = false">
-        <v-icon dark>mdi-close</v-icon>
-      </v-btn>
-    </v-row>
-    <v-row :class="{'px-6': !isMobile, 'px-3': isMobile, 'pb-7': isMobile}" class="mt-0">
-    
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目名称</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['subjectName']"
-          :rules="[
-            v => !!v || '必填',
-            v => tableDataFromBackend.findIndex(item => item.subjectName == v) === -1 || '科目名称已存在',
-          ]"
-        ></v-text-field>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目分类</span>
-        <v-select :items="constantCollection.subjectCategory" dense filled single-line v-model="editItem['subjectCategory']"
-          :rules="requireRules"></v-select>
-      </v-col>
-       
-      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
-        <span class="inputLabel">科目余额方向</span>
-        <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="editItem['subjectBalanceDirection']"
-          :rules="requireRules"></v-select>
-      </v-col>
-    </v-row>
-    <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
-      <v-btn class="ml-2" @click="isEditDrawerShow = false" small>取消</v-btn>
-      <v-btn class="ml-2" color="success" @click="doUiAction('updateItem')" small>保存</v-btn>
-    </v-row>
-  </v-form>
-</v-navigation-drawer>
-
 </jh-layout-v4>
 
 {% endblock %}
@@ -174,10 +79,6 @@ new Vue({
         {text: '成本', value: '成本'},
         {text: '损益', value: '损益'},
       ],
-      subjectDirection: [
-        {text: '借', value: '借'},
-        {text: '贷', value: '贷'},
-      ],
     },
 
 
@@ -190,8 +91,14 @@ new Vue({
       {text: "科目名称", value: "subjectName", width: 250, class: 'fixed', cellClass: 'fixed'}, 
       {text: "科目分类", value: "subjectCategory", width: 100}, 
       {text: "科目余额方向", value: "subjectBalanceDirection", width: 80}, 
-      {text: "备注", value: "remark", width: 120}, 
-      {text: '操作', value: 'action', align: 'center', sortable: false, width: 160, class: 'fixed', cellClass: 'fixed'},
+      {text: "期初余额-借方", value: "debit", width: 80}, 
+      {text: "期初余额-贷方", value: "credit", width: 80}, 
+      {text: "本期发生额-借方", value: "debit", width: 80}, 
+      {text: "本期发生额-贷方", value: "credit", width: 80}, 
+      {text: "本年累计发生额-借方", value: "debit", width: 80}, 
+      {text: "本年累计发生额-贷方", value: "credit", width: 80}, 
+      {text: "期末余额-借方", value: "debit", width: 80}, 
+      {text: "期末余额-贷方", value: "credit", width: 80}, 
     ],
     isEditDrawerShow: false,
     editItem: {},
@@ -270,7 +177,7 @@ new Vue({
       const result = await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'subjectManagement',
+            pageId: 'subjectBalanceFirstManagement',
             actionId: 'selectItemList',
             actionData: {},
             where,
@@ -312,7 +219,7 @@ new Vue({
       await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'subjectManagement',
+            pageId: 'subjectBalanceFirstManagement',
             actionId: 'insertItem',
             actionData: data
           }
@@ -350,7 +257,7 @@ new Vue({
       await window.jianghuAxios({
         data: {
           appData: {
-            pageId: 'subjectManagement',
+            pageId: 'subjectBalanceFirstManagement',
             actionId: 'updateItem',
             actionData: data,
             where: {id}
