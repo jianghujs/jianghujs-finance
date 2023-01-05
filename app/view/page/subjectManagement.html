@@ -6,18 +6,11 @@
 
   <template slot="serverSearch">
     <v-row class="ma-0 align-center flex-none pa-0" :class="{'pa-2': !isMobile, 'pa-2': isMobile}" style="justify-content: end">
-      <v-col cols="12" xs="6" sm="4" md="3" xl="2" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
-        <v-select :items="constantCollection.subject" multiple hide-details dense filled v-model="serverSearchInput.subjectCategory"></v-select>
-      </v-col>
-      <v-col :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" style="max-width: 65px">
-        <v-btn
-          class="elevation-0"
-          color="success"
-          dark
-          @click="doUiAction('refreshTableData')"
-          small
-        >
-          查询
+      <v-col v-for="(item, index) in constantCollection.subjectCategory" :key="index" class="pa-0" style="max-width: 60px">
+        <v-btn class="elevation-0" 
+          :color="selectSubjectCategory === item.value ? 'success' : 'default'" 
+          @click="doUiAction('refreshTableData', { subjectCategory: item.value } )" small>
+          {{ item.text }}
         </v-btn>
       </v-col>
     </v-row>
@@ -29,7 +22,7 @@
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-col cols="12" xs="4" sm="4" md="4" xl="4" class="pl-0">
-        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')" small>新增</v-btn>
+        <v-btn color="success" dark class="elevation-0 mr-2" @click="doUiAction('startCreateItem')" small>新增科目</v-btn>
         <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
       </v-col>
 
@@ -62,7 +55,7 @@
 <v-navigation-drawer v-model="isAddDrawerShow" :permanent="isAddDrawerShow" fixed temporary right width="80%" class="elevation-24">
   <v-form v-model="isFormValid" v-if="isAddDrawerShow" ref="form" lazy-validation>
     <v-row>
-      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">新增</span>
+      <span class="title pa-6" :class="{'pl-8': !isMobile, 'pl-6': isMobile}">新增科目</span>
       <v-spacer></v-spacer>
       <v-btn class="mt-6 elevation-0 mr-8" fab x-small @click="isAddDrawerShow = false">
         <v-icon dark>mdi-close</v-icon>
@@ -72,18 +65,35 @@
      
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
+        <span class="inputLabel">科目编码</span>
+        <v-text-field class="cus-v-input " dense filled single-line 
+          v-model="addItem['subjectId']"
+          :rules="[
+            v => !!v || '必填',
+            v => tableDataFromBackend.findIndex(item => item.subjectId == v) === -1 || '科目编码已存在',
+          ]"
+        ></v-text-field>
+      </v-col>
+      <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目名称</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['subjectName']"></v-text-field>
+        <v-text-field class="cus-v-input " dense filled single-line v-model="addItem['subjectName']"
+          :rules="[
+            v => !!v || '必填',
+            v => tableDataFromBackend.findIndex(item => item.subjectName == v) === -1 || '科目名称已存在',
+          ]"
+        ></v-text-field>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目分类</span>
-        <v-select :items="constantCollection.subject" dense filled single-line v-model="addItem['subjectCategory']"></v-select>
+        <v-select :items="constantCollection.subjectCategory" dense filled single-line v-model="addItem['subjectCategory']"
+          :rules="requireRules"></v-select>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目余额方向</span>
-        <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="addItem['subjectBalanceDirection']"></v-select>
+        <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="addItem['subjectBalanceDirection']"
+          :rules="requireRules"></v-select>
       </v-col>
     </v-row>
     <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
@@ -109,17 +119,24 @@
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目名称</span>
-        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['subjectName']"></v-text-field>
+        <v-text-field class="cus-v-input " dense filled single-line v-model="editItem['subjectName']"
+          :rules="[
+            v => !!v || '必填',
+            v => tableDataFromBackend.findIndex(item => item.subjectName == v) === -1 || '科目名称已存在',
+          ]"
+        ></v-text-field>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目分类</span>
-        <v-select :items="constantCollection.subject" dense filled single-line v-model="editItem['subjectCategory']"></v-select>
+        <v-select :items="constantCollection.subjectCategory" dense filled single-line v-model="editItem['subjectCategory']"
+          :rules="requireRules"></v-select>
       </v-col>
        
       <v-col cols="12" sm="12" md="4" xl="3" :class="{'pa-0': isMobile, 'px-4': isMobile, 'pt-6': isMobile}">
         <span class="inputLabel">科目余额方向</span>
-        <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="editItem['subjectBalanceDirection']"></v-select>
+        <v-select :items="constantCollection.subjectDirection" dense filled single-line v-model="editItem['subjectBalanceDirection']"
+          :rules="requireRules"></v-select>
       </v-col>
     </v-row>
     <v-row class="justify-end mx-0 mt-8" :class="{'px-6': !isMobile, 'px-4': isMobile, 'mb-8': isMobile}">
@@ -144,10 +161,10 @@ new Vue({
     // 表格相关数据
     isFormValid: true,
     requireRules: [
-      v => !!v || 'This is required',
+      v => !!v || '必填',
     ],
     constantCollection: {
-      subject: [
+      subjectCategory: [
         {text: '资产', value: '资产'},
         {text: '负债', value: '负债'},
         {text: '权益', value: '权益'},
@@ -160,9 +177,8 @@ new Vue({
       ],
     },
 
-    serverSearchInput: {
-      subjectCategory: ['资产', '负债', '权益', '成本', '损益'],
-    },
+
+    selectSubjectCategory: '成本',
     searchInput: null,
     isTableLoading: true,
     tableDataFromBackend: [],
@@ -191,14 +207,14 @@ new Vue({
   },
   watch: {},
   async created() {
-    await this.doUiAction('refreshTableData');
+    await this.doUiAction('refreshTableData', { subjectCategory: this.selectSubjectCategory });
   },
   mounted() {},
   methods: {
     async doUiAction(uiActionId, uiActionData) {
       switch (uiActionId) {
         case 'refreshTableData':
-          await this.refreshTableData();
+          await this.refreshTableData(uiActionData);
           break;
         case 'startCreateItem':
           await this.clearItemData();
@@ -243,18 +259,16 @@ new Vue({
      * uiActionId:  refreshTableData
      * description: ✅获取表格数据
     */
-    async refreshTableData() {
+    async refreshTableData({ subjectCategory }) {
       this.isTableLoading = true;
-      const serverSearchInput = _.pickBy(this.serverSearchInput, value=> !!value);
-      const { subjectCategory ,...serverSearchInputData} = serverSearchInput
+      this.selectSubjectCategory = subjectCategory;
       const result = await window.jianghuAxios({
         data: {
           appData: {
             pageId: 'subjectManagement',
             actionId: 'selectItemList',
             actionData: {},
-            where: {},
-            whereIn: { subjectCategory },
+            where: { subjectCategory },
             orderBy: [{column: 'subjectId', order: 'desc'}]
           }
         }
