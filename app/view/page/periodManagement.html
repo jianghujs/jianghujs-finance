@@ -113,14 +113,8 @@
       </v-col>
     </v-row>
     <v-row class="justify-end pr-6">
-      <v-btn color="success" 
-        dark small
-        class="elevation-0" 
-        @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">确定</v-btn>
-      <v-btn
-        dark small
-        class="elevation-0 ml-2" 
-        @click="isCreateItemDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
+      <v-btn color="success" small class="ml-2" @click="doUiAction('createItem')">确定</v-btn>
+      <v-btn small class="ml-2" @click="isCreateItemDrawerShow = false">取消</v-btn>
     </v-row>
   </v-form>
 </v-navigation-drawer>
@@ -175,8 +169,8 @@
       </v-col>
     </v-row>
     <v-row class="justify-end pr-6">
-      <v-btn color="success" @click="doUiAction('checkout')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">确定</v-btn>
-      <v-btn class="ml-2" @click="isCheckoutDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
+      <v-btn small class="ml-2" color="success" @click="doUiAction('checkout')">确定</v-btn>
+      <v-btn small class="ml-2" @click="isCheckoutDrawerShow = false">取消</v-btn>
     </v-row>
   </v-form>
 </v-navigation-drawer>
@@ -358,7 +352,7 @@ new Vue({
      * description: ✅获取表格数据
     */
     async confirmCheckoutItemDialog() {
-      if (await window.confirmDialog({title: "新增", content: "确定新增吗？"}) === false) {
+      if (await window.confirmDialog({title: "结账", content: "确定结账并生成下一个会计期间吗？"}) === false) {
         throw new Error("取消");
       }
     },
