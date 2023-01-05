@@ -9,33 +9,38 @@
     class="ma-0 align-center flex-none pa-0" 
     :class="{'pa-2': !isMobile, 'pa-2': isMobile}"
     style="justify-content: end">
+      <v-col cols="12" 
+        style="text-align: right;"
+        :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
+        <v-btn 
+          v-if="tableDataFromBackend.length > 0"
+          color="default" 
+          dark small
+          class="elevation-0" 
+          class="elevation-0 mr-2" 
+          @click="doUiAction('reCheckoutAllPeriod')">
+          重新结账【开发调试用】
+        </v-btn>
+        <v-btn 
+          v-if="tableDataFromBackend.length === 0"
+          color="warning" 
+          dark small
+          class="elevation-0" 
+          class="elevation-0 mr-2" 
+          @click="doUiAction('startCreateItem')">
+          创建-初始会计期间
+        </v-btn>
+        <v-btn
+          v-if="tableDataFromBackend.length > 0"
+          color="success" 
+          dark small
+          class="elevation-0" 
+          @click="doUiAction('startCheckoutItem')">
+          结账-生成下一个会计期间
+        </v-btn>
+      </v-col>
 
-    <v-spacer></v-spacer>
 
-    <v-btn 
-      v-if="tableDataFromBackend.length > 0"
-      color="default" 
-      dark 
-      class="elevation-0 mr-2" 
-      @click="doUiAction('reCheckoutAllPeriod')">
-      重新结账【开发调试用】
-    </v-btn>
-    <v-btn 
-      v-if="tableDataFromBackend.length === 0"
-      color="warning" 
-      dark 
-      class="elevation-0 mr-2" 
-      @click="doUiAction('startCreateItem')">
-      创建-初始会计期间
-    </v-btn>
-    <v-btn
-      v-if="tableDataFromBackend.length > 0"
-      color="success" 
-      dark 
-      class="elevation-0 mr-2" 
-      @click="doUiAction('startCheckoutItem')">
-      结账-生成下一个会计期间
-    </v-btn>
   </v-row>
 </template> 
 
@@ -108,8 +113,14 @@
       </v-col>
     </v-row>
     <v-row class="justify-end pr-6">
-      <v-btn color="success" @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">确定</v-btn>
-      <v-btn class="ml-2" @click="isCreateItemDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
+      <v-btn color="success" 
+        dark small
+        class="elevation-0" 
+        @click="doUiAction('createItem')" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mb-2': isMobile, 'mr-4': isMobile}">确定</v-btn>
+      <v-btn
+        dark small
+        class="elevation-0 ml-2" 
+        @click="isCreateItemDrawerShow = false" :style="{width: isMobile ? 'calc(100% - 45px)' : '200px'}" :class="{'mr-4': isMobile}">取消</v-btn>
     </v-row>
   </v-form>
 </v-navigation-drawer>
