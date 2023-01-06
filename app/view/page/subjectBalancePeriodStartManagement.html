@@ -26,7 +26,7 @@
         :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}" >
         <v-text-field 
           style="display: inline-block; width: 170px;"
-          prefix="期初会计期间: " 
+          prefix="初始会计期间: " 
           v-model="periodStart.periodId" class="cus-v-input" dense filled single-line readonly></v-text-field>
         <v-btn class="elevation-0 mr-2" 
           color="success" 
@@ -35,7 +35,7 @@
         </v-btn>
         <v-btn class="elevation-0" 
           color="warning" 
-          @click="doUiAction('checkSubjectBalanceFirst', { } )" small>
+          @click="doUiAction('checkSubjectBalance', { } )" small>
           试平衡计算
         </v-btn>
       </v-col>
@@ -76,6 +76,82 @@
     </v-data-table>
   </v-card>
 </v-container>
+
+
+<v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
+  <v-card class="rounded-lg">
+  <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+
+      <v-col cols="12" xs="6" class="pl-0">
+        <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
+      </v-col>
+
+      <v-spacer></v-spacer>
+
+      <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
+        <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
+      </v-col>
+    </v-row>
+    <v-data-table fixed-header
+                  :headers="headers"
+                  :items="tableData"
+                  :search="searchInput"
+                  :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
+                  :items-per-page="-1"
+                  mobile-breakpoint="0"
+                  :loading="isTableLoading"
+                  checkbox-color="success"
+                  class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+      <template v-slot:item.periodStartBalance="{ item }">
+        <v-text-field class="cus-v-input mr-2" dense filled single-line 
+          v-model.number="item.periodStartBalance" type="number">
+        </v-text-field>
+      </template>
+    </v-data-table>
+  </v-card>
+</v-container>
+
+
+<v-row justify="space-around">
+  <v-col cols="auto">
+    <v-dialog v-model="checkSubjectBalanceDialog" transition="dialog-bottom-transition" max-width="600">
+      <template v-slot:default="dialog">
+        <v-card>
+          
+          <v-toolbar color="default">
+            <span class="title pl-6">试算平衡</span>
+          </v-toolbar>
+
+          <v-card-text>
+            <v-simple-table>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">项目</th>
+                    <th class="text-left">借方金额</th>
+                    <th class="text-left">贷方金额</th>
+                    <th class="text-left">差额</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>期初余额</td>
+                    <td>{{ debitSum }}</td>
+                    <td>{{ creditSum }}</td>
+                    <td>{{ debitSum - creditSum }}</td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </v-card-text>
+          <v-card-actions class="justify-end">
+            <v-btn text @click="checkSubjectBalanceDialog = false">关闭</v-btn>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
+  </v-col>
+</v-row>  
 
 </jh-layout-v4>
 
@@ -120,12 +196,15 @@ new Vue({
       {text: "科目名称", value: "subjectName", width: 250, class: 'fixed', cellClass: 'fixed'}, 
       {text: "科目分类", value: "subjectCategory", width: 100}, 
       {text: "科目余额方向", value: "subjectBalanceDirection", width: 80}, 
-      {text: "期初余额", value: "periodStartBalance", width: 120}, 
+      {text: "初始余额", value: "periodStartBalance", width: 120}, 
       // {text: "借方", value: "debit", width: 120}, 
       // {text: "贷方", value: "credit", width: 120}, 
       // {text: "年初余额", value: "occurAmount", width: 120}, 
     ],
 
+    checkSubjectBalanceDialog: false,
+    debitSum: 0,
+    creditSum: 0,
   }),
   computed: {
     isMobile() {
@@ -158,8 +237,8 @@ new Vue({
         case 'updateSubjectBalanceForPeriodStart':
           await this.updateSubjectBalanceForPeriodStart(uiActionData);
           break;
-        case 'checkSubjectBalanceFirst':
-          await this.checkSubjectBalanceFirst(uiActionData);
+        case 'checkSubjectBalance':
+          await this.checkSubjectBalance(uiActionData);
           break;
         default:
           console.error("[doUiAction] uiActionId not find", { uiActionId });
@@ -189,8 +268,8 @@ new Vue({
       }
       if (rows.length > 1) {
         this.isTableLoading = false;
-        window.vtoast.fail({ message: "期初会计期间不能有多个!" });
-        throw new Error("[selectPeriodStart] false; 期初会计期间不能有多个");
+        window.vtoast.fail({ message: "初始会计期间不能有多个!" });
+        throw new Error("[selectPeriodStart] false; 初始会计期间不能有多个");
       }
     },
     /**
@@ -246,16 +325,15 @@ new Vue({
       });
       await window.vtoast.success("保存成功");
     },
-    async checkSubjectBalanceFirst({}) {
-      // TODO: ConfirmDailog 展示 平衡数据数据
+    async checkSubjectBalance({}) {
       const debitList = this.tableDataFromBackend.filter(row => row.subjectBalanceDirection === '借');
       const creditList = this.tableDataFromBackend.filter(row => row.subjectBalanceDirection === '贷');
-      const debitSum = _.sumBy(debitList, 'periodStartBalance');
-      const creditSum = _.sumBy(creditList, 'periodStartBalance');
-      if (debitSum !== creditSum) {
-        await window.vtoast.fail("您录入的期初余额不平衡，请仔细核对!");
+      this.debitSum = _.sumBy(debitList, 'periodStartBalance');
+      this.creditSum = _.sumBy(creditList, 'periodStartBalance');
+      if (this.debitSum !== this.creditSum) {
+        await window.vtoast.fail("您录入的初始余额不平衡，请仔细核对!");
       }
-      window.confirmDialog({title: "试算平衡", content: `借方金额: ${debitSum}  贷方金额: ${creditSum}  差额: ${debitSum-creditSum}`})
+      this.checkSubjectBalanceDialog = true;
     },
   }
 })
@@ -264,3 +342,4 @@ new Vue({
 <style scoped>
 </style>
 {% endblock %}
+
