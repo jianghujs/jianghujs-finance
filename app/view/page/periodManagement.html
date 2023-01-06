@@ -26,7 +26,7 @@
           dark small
           class="elevation-0 mr-2" 
           @click="doUiAction('startCreateItem')">
-          创建-初始会计期间
+          创建-期初会计期间
         </v-btn>
         <v-btn
           v-if="tableDataFromBackend.length > 0"
@@ -67,11 +67,11 @@
   </v-card>
 </v-container>
 
-<!-- 创建-初始会计期间 -->
+<!-- 创建-期初会计期间 -->
 <v-navigation-drawer v-model="isCreateItemDrawerShow" :permanent="isCreateItemDrawerShow" fixed temporary right width="80%" class="elevation-24">
   <v-form v-model="isFormValid" v-if="isCreateItemDrawerShow" ref="form" lazy-validation>
     <v-row class="pt-8">
-      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">创建-初始会计期间</span>
+      <span class="title pa-6" :class="{'pl-12': !isMobile, 'pl-6': isMobile}">创建-期初会计期间</span>
       <v-spacer></v-spacer>
       <v-btn class="mt-6 elevation-0" :class="{'mr-16': !isMobile, 'mr-8': isMobile}" fab x-small @click="isCreateItemDrawerShow = false">
         <v-icon dark>mdi-close</v-icon>
@@ -89,7 +89,7 @@
           min-width="auto">
           <template v-slot:activator="{ on, attrs }">
             <v-text-field
-              prefix="会计期间:" 
+              prefix="期初会计期间:" 
               v-model="createItem['periodId']"
               class="cus-v-input"
               dense
@@ -268,7 +268,7 @@ new Vue({
         throw new Error("[prepareValidate] false");
       }
       if (this.tableDataFromBackend.length > 0) {
-        window.vtoast.fail({ message: "初始会计期间已存在, 请勿重复创建!" });
+        window.vtoast.fail({ message: "期初会计期间已存在, 请勿重复创建!" });
         throw new Error("[prepareValidate] false");
       }
     },
@@ -327,24 +327,23 @@ new Vue({
     },
 
     async confirmCreateItemDialog() {
-      if (await window.confirmDialog({title: "会计期间", content: "确定创建-初始会计期间吗？"}) === false) {
+      if (await window.confirmDialog({title: "会计期间", content: "确定创建-期初会计期间吗？"}) === false) {
         throw new Error("取消");
       }
     },
     async doCreateItem() {
       const { id, ...data } = this.createItem;
-      data.isCheckout = '待结账';
-      await window.vtoast.loading("创建-初始会计期间");
+      await window.vtoast.loading("创建-期初会计期间");
       await window.jianghuAxios({
         data: {
           appData: {
             pageId: 'periodManagement',
-            actionId: 'insertItem',
+            actionId: 'createPeriodStart',
             actionData: data
           }
         }
       })
-      await window.vtoast.success("创建-初始会计期间成功, 请前往\"科目初始余额\"!");
+      await window.vtoast.success("创建-期初会计期间成功, 请前往\"科目期初余额\"!");
     },
     /**
      * uiActionId:  checkoutItem

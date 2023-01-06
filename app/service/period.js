@@ -11,9 +11,45 @@ const actionDataScheme = Object.freeze({
         periodId: { type: 'string' },
     },
   },
+
+  createPeriodStart: {
+    type: 'object',
+    additionalProperties: true,
+    required: ['periodId'],
+    properties: {
+        periodId: { type: 'string' },
+    },
+  },
 });
 
 class PeriodService extends Service {
+
+  async createPeriodStart() {
+    const ctx = this.ctx;
+    const { jianghuKnex } = this.app;
+    const actionData = this.ctx.request.body.appData.actionData;
+    validateUtil.validate(actionDataScheme.createPeriodStart, actionData);
+    const { periodId } = actionData;
+    const isPeriodStart = '是';
+    const isCheckout = '待结账';
+
+    const subjectList = await jianghuKnex(tableEnum.subject).where({}).select();
+    const subjectBalanceList = subjectList.map(subject => {
+      return {
+        periodId,
+        subjectId: subject.subjectId,
+        debit: 0, credit: 0,
+        occurDebit: 0, occurCredit: 0, occurAmount: 0,
+        isPeriodStart,
+      }
+    })
+
+    await jianghuKnex.transaction(async trx => {
+        await trx(tableEnum.period, ctx).insert({ periodId, isCheckout, isPeriodStart });
+        await trx(tableEnum.subject_balance, ctx).insert(subjectBalanceList);
+    })
+
+  }
 
   async checkout() {
     const ctx = this.ctx;
@@ -24,9 +60,9 @@ class PeriodService extends Service {
 
     await jianghuKnex.transaction(async trx => {
 
-        await trx(tableEnum.period, ctx).update({ isCheckout: '已结算' });
+        await trx(tableEnum.period, ctx).update({ isCheckout: '已结账' });
 
-        await trx(tableEnum.period, ctx).insert({ periodId, isCheckout: '待结算' });
+        await trx(tableEnum.period, ctx).insert({ periodId, isCheckout: '待结账' });
 
         // TODO: 生成下一个科目余额
     })

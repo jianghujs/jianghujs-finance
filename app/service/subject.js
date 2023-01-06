@@ -223,7 +223,7 @@ class SubjectService extends Service {
   //   }
   // }
 
-  async updateSubjectBalanceListForPeriodIdFirst() {
+  async updateSubjectBalanceListForFirst() {
   }
 }
 
