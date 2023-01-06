@@ -218,7 +218,8 @@ new Vue({
           await this.refreshTableData();
           break;
         case 'updateSubjectBalanceForPeriodStart':
-          await this.updateSubjectBalanceForPeriodStart(uiActionData);
+          await this.updateSubjectBalanceForPeriodStart();
+          await this.refreshTableData();
           break;
         case 'checkSubjectBalance':
           await this.checkSubjectBalance(uiActionData);
@@ -284,7 +285,7 @@ new Vue({
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
-    async updateSubjectBalanceForPeriodStart({}) { 
+    async updateSubjectBalanceForPeriodStart() { 
       await window.vtoast.loading("保存");
       const subjectBalanceList = this.tableDataFromBackend.map(item => {
         return {
@@ -308,7 +309,7 @@ new Vue({
       });
       await window.vtoast.success("保存成功");
     },
-    async checkSubjectBalance({}) {
+    async checkSubjectBalance() {
       const debitList = this.tableDataFromBackend.filter(row => row.subjectBalanceDirection === '借');
       const creditList = this.tableDataFromBackend.filter(row => row.subjectBalanceDirection === '贷');
       this.debitSum = _.sumBy(debitList, 'periodStartBalance');
