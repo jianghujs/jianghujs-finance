@@ -47,7 +47,7 @@
             sort-by="profitFormulaCount"
             :sort-desc="true"
             :loading="isTableLoading" checkbox-color="success"
-            class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+            class="fixed-table-height elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
             <template v-slot:item.action="{ item }">
               <v-icon small @click="doUiAction('startAddFormula', {item})">
                 mdi-clipboard-edit-outline
@@ -79,7 +79,7 @@
             sort-by="profitFormulaCount"
             :sort-desc="true"
             :loading="isTableLoading" checkbox-color="success"
-            class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+            class="fixed-table-height elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
             <template v-slot:item.action="{ item }">
               <v-icon small @click="doUiAction('startAddFormula', {item})">
                 mdi-clipboard-edit-outline
@@ -118,6 +118,7 @@
 {% endblock %}
 
 {% block vue_body %}
+{% include 'common/fixedTableHeight.html' %}
 {% include 'component/assetsAndLiabilitiesManagement-formula.html' %}
 <script type="module">
   new Vue({

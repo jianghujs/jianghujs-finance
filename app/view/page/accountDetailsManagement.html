@@ -82,7 +82,7 @@
                       mobile-breakpoint="0"
                       :loading="isTableLoading"
                       checkbox-color="success"
-                      class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+                      class="fixed-table-height elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
         
       </v-card>
     </v-col>
@@ -95,6 +95,7 @@
 {% endblock %}
 
 {% block vue_body %}
+{% include 'common/fixedTableHeight.html' %}
 
 <script type="module">
 new Vue({

@@ -71,7 +71,7 @@ SQL END!-->
                   :loading="isTableLoading"
                   group-by="voucherId"
                   checkbox-color="success"
-                  class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
+                  class="fixed-table-height elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
 
       <template v-slot:group.header="{items, isOpen, toggle, remove}">
         <td>
@@ -177,6 +177,7 @@ SQL END!-->
 {% endblock %}
 
 {% block vue_body %}
+{% include 'common/fixedTableHeight.html' %}
 {% include 'component/voucherManagement-entry.html' %}
 
 <script type="module">
@@ -470,6 +471,5 @@ new Vue({
   .enhancer-voucher-header .enhancer-voucher-title { font-size: 15px; width: 100px; height: 18px; line-height: 18px; position: absolute; left: 50%; top: 50%; margin-left: -50px; margin-top: -9px; }
   .enhancer-voucher-header .enhancer-voucher-attachments-wrap { float: right; padding: 0 5px; }
   .enhancer-voucher-header .enhancer-voucher-attachments-wrap .enhancer-voucher-attachments { width: 32px; border: 1px solid #eee; line-height: 30px; }
-  .enhancer-voucher-header .
 </style>
 {% endblock %}
