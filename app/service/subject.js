@@ -12,6 +12,16 @@ const actionDataScheme = Object.freeze({
       subjectCategory: { type: 'string' },
     },
   },
+  updateSubjectBalanceForPeriodStart: {
+    type: 'object',
+    additionalProperties: true,
+    required: ['subjectBalanceList'],
+    properties: {
+      subjectBalanceList: { type: 'array' },
+    },
+  },
+
+  
 });
 
 class SubjectService extends Service {
@@ -223,7 +233,23 @@ class SubjectService extends Service {
   //   }
   // }
 
-  async updateSubjectBalanceListForFirst() {
+  async updateSubjectBalanceForPeriodStart() {
+    const ctx = this.ctx;
+    const { knex, jianghuKnex } = this.app;
+    const actionData = this.ctx.request.body.appData.actionData;
+    validateUtil.validate(actionDataScheme.updateSubjectBalanceForPeriodStart, actionData);
+    const { subjectBalanceList } = actionData;
+    await knex.transaction(trx => {
+      const queries = subjectBalanceList.map(subjectBalance =>
+        knex(tableEnum.subject_balance)
+          .where({ id: subjectBalance.id })
+          .update({ periodStartBalance: subjectBalance.periodStartBalance})
+          .transacting(trx)
+      );
+      return Promise.all(queries)
+        .then(trx.commit)    
+        .catch(trx.rollback);
+    });
   }
 }
 

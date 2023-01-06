@@ -30,7 +30,7 @@
           v-model="periodStart.periodId" class="cus-v-input" dense filled single-line readonly></v-text-field>
         <v-btn class="elevation-0 mr-2" 
           color="success" 
-          @click="doUiAction('updateSubjectBalanceFirst', {} )" small>
+          @click="doUiAction('updateSubjectBalanceForPeriodStart', {} )" small>
           保存
         </v-btn>
         <v-btn class="elevation-0" 
@@ -155,8 +155,8 @@ new Vue({
         case 'refreshTableData':
           await this.refreshTableData(uiActionData);
           break;
-        case 'updateSubjectBalanceFirst':
-          await this.updateSubjectBalanceFirst(uiActionData);
+        case 'updateSubjectBalanceForPeriodStart':
+          await this.updateSubjectBalanceForPeriodStart(uiActionData);
           break;
         case 'checkSubjectBalanceFirst':
           await this.checkSubjectBalanceFirst(uiActionData);
@@ -179,13 +179,13 @@ new Vue({
         }
       });
       const { rows } = result.data.appData.resultData;
+      if (rows.length === 1) {
+        this.periodStart = rows[0];
+      }
       if (rows.length === 0) {
         this.isTableLoading = false;
         window.vtoast.fail({ message: "请创建第一个会计期间!" });
         throw new Error("[selectPeriodStart] false; 请创建第一个会计期间");
-      }
-      if (rows.length === 1) {
-        this.periodStart = rows[0];
       }
       if (rows.length > 1) {
         this.isTableLoading = false;
@@ -200,7 +200,10 @@ new Vue({
     async refreshTableData({ subjectCategory }) {
       this.isTableLoading = true;
       this.selectSubjectCategory = subjectCategory;
-      const where = { periodId: this.periodStart.periodId };
+      const where = { 
+        periodId: this.periodStart.periodId,
+        isPeriodStart: '是',
+      };
       if (subjectCategory) {
         where.subjectCategory = this.selectSubjectCategory;
       }
@@ -221,14 +224,16 @@ new Vue({
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
-    async updateSubjectBalanceFirst({}) {
+    async updateSubjectBalanceForPeriodStart({}) { 
       await window.vtoast.loading("保存");
       await window.jianghuAxios({
         data: {
           appData: {
             pageId: 'subjectBalancePeriodStartManagement',
-            actionId: 'updateSubjectBalanceListForFirst',
-            actionData: {},
+            actionId: 'updateSubjectBalanceForPeriodStart',
+            actionData: {
+              subjectBalanceList: this.tableDataFromBackend,
+            },
           }
         }
       });
