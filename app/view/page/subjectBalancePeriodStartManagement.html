@@ -9,13 +9,13 @@
       <v-col cols="12" xs="12" sm="12" md="6" xl="6" :class="{'pt-2': isMobile, 'pl-0': isMobile, 'pr-0': !isMobile}">
         <v-btn class="elevation-0" v-for="(item, index) in constantCollection.subjectCategory" :key="index" 
           :color="selectSubjectCategory === item.value ? 'success' : 'default'" 
-          @click="doUiAction('refreshTableData', { subjectCategory: item.value } )" small>
+          @click="selectSubjectCategory = item.value; doUiAction('refreshTableData');" small>
           {{ item.text }}
         </v-btn>
         <v-divider class="mx-1" vertical></v-divider>
         <v-btn class="elevation-0" 
           :color="selectSubjectCategory === '' ? 'success' : 'default'" 
-          @click="doUiAction('refreshTableData', { subjectCategory: '' } )" small>
+          @click="selectSubjectCategory = ''; doUiAction('refreshTableData');" small>
           全部
         </v-btn>
       </v-col>
@@ -45,7 +45,7 @@
         <v-btn class="elevation-0" 
           color="warning" 
           @click="doUiAction('checkSubjectBalance', { } )" small>
-          试平衡计算
+          试算平衡
         </v-btn>
       </v-col>
       
@@ -77,40 +77,6 @@
       <template v-slot:item.periodStartBalance="{ item }">
         <v-text-field class="cus-v-input mr-2" dense filled single-line 
           :disabled="periodStart.isCheckout === '已结账'"
-          v-model.number="item.periodStartBalance" type="number">
-        </v-text-field>
-      </template>
-    </v-data-table>
-  </v-card>
-</v-container>
-
-
-<v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
-  <v-card class="rounded-lg">
-  <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
-
-      <v-col cols="12" xs="6" class="pl-0">
-        <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
-      </v-col>
-
-      <v-spacer></v-spacer>
-
-      <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
-        <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
-      </v-col>
-    </v-row>
-    <v-data-table fixed-header
-                  :headers="headers"
-                  :items="tableData"
-                  :search="searchInput"
-                  :footer-props="{ itemsPerPageOptions: [20, 40, 60, 100, -1] }"
-                  :items-per-page="-1"
-                  mobile-breakpoint="0"
-                  :loading="isTableLoading"
-                  checkbox-color="success"
-                  class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
-      <template v-slot:item.periodStartBalance="{ item }">
-        <v-text-field class="cus-v-input mr-2" dense filled single-line 
           v-model.number="item.periodStartBalance" type="number">
         </v-text-field>
       </template>
@@ -238,8 +204,8 @@ new Vue({
   },
   watch: {},
   async created() {
-    await this.doUiAction('selectPeriodStart', {});
-    await this.doUiAction('refreshTableData', { subjectCategory: this.selectSubjectCategory });
+    await this.doUiAction('selectPeriodStart');
+    await this.doUiAction('refreshTableData');
   },
   mounted() {},
   methods: {
@@ -249,7 +215,7 @@ new Vue({
           await this.selectPeriodStart();
           break;
         case 'refreshTableData':
-          await this.refreshTableData(uiActionData);
+          await this.refreshTableData();
           break;
         case 'updateSubjectBalanceForPeriodStart':
           await this.updateSubjectBalanceForPeriodStart(uiActionData);
@@ -293,9 +259,8 @@ new Vue({
      * uiActionId:  refreshTableData
      * description: ✅获取表格数据
     */
-    async refreshTableData({ subjectCategory }) {
+    async refreshTableData() {
       this.isTableLoading = true;
-      this.selectSubjectCategory = subjectCategory;
       const where = { 
         periodId: this.periodStart.periodId,
         isPeriodStart: '是',
@@ -326,7 +291,7 @@ new Vue({
           id: item.id,
           periodId: item.periodId,
           isPeriodStart: item.isPeriodStart,
-          periodStartBalance: item.periodStartBalance,
+          periodStartBalance: item.periodStartBalance || 0,
         }
       })
       await window.jianghuAxios({

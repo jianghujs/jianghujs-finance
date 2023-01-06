@@ -27,7 +27,7 @@ const actionDataScheme = Object.freeze({
           properties: {
             id: { anyOf: [{ type: "string" }, { type: "number" }] },
             periodId: { anyOf: [{ type: "string" }, { type: "number" }] },
-            periodStartBalance: { anyOf: [{ type: "number" }, { type: "null" }] },
+            periodStartBalance: { type: "number" },
           }
         }
       },
