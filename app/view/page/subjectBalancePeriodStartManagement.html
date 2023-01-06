@@ -29,10 +29,19 @@
           prefix="初始会计期间: " 
           v-model="periodStart.periodId" class="cus-v-input" dense filled single-line readonly></v-text-field>
         <v-btn class="elevation-0 mr-2" 
+          :disabled="periodStart.isCheckout === '已结账'"
           color="success" 
           @click="doUiAction('updateSubjectBalanceForPeriodStart', {} )" small>
           保存
         </v-btn>
+        <v-btn
+           v-if="periodStart.isCheckout === '已结账'"
+           style="margin: 12px 0px 0px -32px;"
+           @click="window.vtoast.show({ message: '初始会计期间已结账, 禁止保存初始余额!', icon: 'mdi-help-circle' })"
+           text icon small>
+          <v-icon small>mdi-help-circle</v-icon>
+        </v-btn>
+
         <v-btn class="elevation-0" 
           color="warning" 
           @click="doUiAction('checkSubjectBalance', { } )" small>
@@ -46,14 +55,11 @@
 <!-- 页面主要内容 -->
 <v-container class="fullScreen d-flex flex-column pa-xs-0 pa-0">
   <v-card class="rounded-lg">
-  <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
-
-      <v-col cols="12" xs="6" class="pl-0">
+    <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
+      <v-col cols="12" xs="4" sm="4" md="4" xl="4"  class="pl-0">
         <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
       </v-col>
-
       <v-spacer></v-spacer>
-
       <v-col cols="12" xs="6" sm="4" md="3" xl="2" class="pa-xs-0 pa-xs-2 col-sm-8-flex">
         <v-text-field v-model="searchInput" label="表格过滤" class="cus-v-input" dense filled single-line></v-text-field>
       </v-col>
@@ -70,6 +76,7 @@
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
       <template v-slot:item.periodStartBalance="{ item }">
         <v-text-field class="cus-v-input mr-2" dense filled single-line 
+          :disabled="periodStart.isCheckout === '已结账'"
           v-model.number="item.periodStartBalance" type="number">
         </v-text-field>
       </template>
@@ -138,7 +145,17 @@
                     <td>期初余额</td>
                     <td>{{ debitSum }}</td>
                     <td>{{ creditSum }}</td>
-                    <td>{{ debitSum - creditSum }}</td>
+                    <td>
+                      <span v-if="debitSum - creditSum !== 0" class="error--text">
+                        {{ debitSum - creditSum }} 
+                        <v-btn
+                            @click="window.vtoast.show({ message: '借贷不平衡!', icon: 'mdi-help-circle' })"
+                            text icon small>
+                          <v-icon small>mdi-help-circle</v-icon>
+                        </v-btn>
+                      </span>
+                      <span v-if="debitSum - creditSum === 0" class="green--text">{{ debitSum - creditSum }}</span>
+                    </td>
                   </tr>
                 </tbody>
               </template>
@@ -318,6 +335,7 @@ new Vue({
             pageId: 'subjectBalancePeriodStartManagement',
             actionId: 'updateSubjectBalanceForPeriodStart',
             actionData: {
+              periodId: this.periodStart.periodId,
               subjectBalanceList,
             },
           }

@@ -65,7 +65,7 @@
                   class="elevation-0 mt-0 mb-xs-4 flex-fill d-flex flex-column">
       <template v-slot:item.periodId="{ item }">
         {{ item.periodId }} 
-        <v-btn v-if="item.isPeriodStart === '是'" text color="primary" small>初始会计期间</v-btn>
+        <span v-if="item.isPeriodStart === '是'" class="error--text">初始会计期间</span>
       </template>
     </v-data-table>
   </v-card>

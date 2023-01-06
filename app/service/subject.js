@@ -2,6 +2,7 @@ const Service = require('egg').Service;
 const idGenerateUtil = require("@jianghujs/jianghu/app/common/idGenerateUtil");
 const validateUtil = require('@jianghujs/jianghu/app/common/validateUtil');
 const { subjectCategoryEnum, tableEnum } = require('../constant/constant');
+const { BizError, errorInfoEnum } = require('../constant/error');
 
 const actionDataScheme = Object.freeze({
   fillInsertItemParamsBeforeHook: {
@@ -15,8 +16,9 @@ const actionDataScheme = Object.freeze({
   updateSubjectBalanceForPeriodStart: {
     type: 'object',
     additionalProperties: true,
-    required: ['subjectBalanceList'],
+    required: ['periodId', 'subjectBalanceList'],
     properties: {
+      periodId: { anyOf: [{ type: "string" }, { type: "number" }] },
       subjectBalanceList: { 
         type: 'array',
         items: {
@@ -249,7 +251,17 @@ class SubjectService extends Service {
     const { knex, jianghuKnex } = this.app;
     const actionData = this.ctx.request.body.appData.actionData;
     validateUtil.validate(actionDataScheme.updateSubjectBalanceForPeriodStart, actionData);
-    const { subjectBalanceList } = actionData;
+    const { periodId, subjectBalanceList } = actionData;
+
+    const period = await jianghuKnex(tableEnum.period).where({ periodId }).select().first();
+    if (!period) {
+      throw new BizError(errorInfoEnum.period_not_exist);
+    }
+    if (period.isCheckout !== '待结账') {
+      throw new BizError(errorInfoEnum.period_has_checkout);
+    }
+
+    // 批量update
     await knex.transaction(trx => {
       const queries = subjectBalanceList.map(subjectBalance =>
         jianghuKnex(tableEnum.subject_balance, ctx)

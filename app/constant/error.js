@@ -15,6 +15,14 @@ const errorInfoEnum = Object.freeze({
     errorCode: "data_expection",
     errorReason: "数据异常",
   },
+  period_not_exist: {
+    errorCode: "period_not_exist",
+    errorReason: "会计期间不存在",
+  },
+  period_has_checkout: {
+    errorCode: "period_has_checkout",
+    errorReason: "会计期间已结算",
+  },
   voucherId_exist: {
     errorCode: "voucherId_exist",
     errorReason: "凭证字号已存在",
