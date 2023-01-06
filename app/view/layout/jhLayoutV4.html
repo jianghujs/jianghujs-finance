@@ -283,6 +283,9 @@ Vue.component("jh-layout-v4", {
       })
       this.userInfo = userInfo;
       this.$emit('layoutData', { userInfo: this.userInfo })
+      if (this.userInfo.username) {
+        localStorage.setItem(`${window.appInfo.appId}_username`, this.userInfo.username);
+      }
       this.layoutLoading = false;
     },
     computedMenuList() {
