@@ -17,7 +17,18 @@ const actionDataScheme = Object.freeze({
     additionalProperties: true,
     required: ['subjectBalanceList'],
     properties: {
-      subjectBalanceList: { type: 'array' },
+      subjectBalanceList: { 
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['id', 'periodId'],
+          properties: {
+            id: { anyOf: [{ type: "string" }, { type: "number" }] },
+            periodId: { anyOf: [{ type: "string" }, { type: "number" }] },
+            periodStartBalance: { anyOf: [{ type: "number" }, { type: "null" }] },
+          }
+        }
+      },
     },
   },
 
@@ -241,7 +252,7 @@ class SubjectService extends Service {
     const { subjectBalanceList } = actionData;
     await knex.transaction(trx => {
       const queries = subjectBalanceList.map(subjectBalance =>
-        knex(tableEnum.subject_balance)
+        jianghuKnex(tableEnum.subject_balance, ctx)
           .where({ id: subjectBalance.id })
           .update({ periodStartBalance: subjectBalance.periodStartBalance})
           .transacting(trx)

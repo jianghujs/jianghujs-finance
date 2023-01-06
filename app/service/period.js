@@ -8,7 +8,7 @@ const actionDataScheme = Object.freeze({
     additionalProperties: true,
     required: ['periodId'],
     properties: {
-        periodId: { type: 'string' },
+        periodId: { anyOf: [{ type: "string" }, { type: "number" }] },
     },
   },
 
@@ -17,7 +17,7 @@ const actionDataScheme = Object.freeze({
     additionalProperties: true,
     required: ['periodId'],
     properties: {
-        periodId: { type: 'string' },
+        periodId: { anyOf: [{ type: "string" }, { type: "number" }] },
     },
   },
 });

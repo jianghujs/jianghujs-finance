@@ -49,11 +49,6 @@
   <v-row class="ma-0 pa-xs-4 align-center flex-none pt-0 " :class="{'pa-4': !isMobile, 'pb-0': !isMobile, 'pa-2': isMobile}">
 
       <v-col cols="12" xs="6" class="pl-0">
-        <v-badge color="green" :content="periodStart.isCheckout">
-          <span class="title">{{ periodStart.periodId }}</span>
-        </v-badge>
-
-        <!-- <span class="title">初始会计期间: {{ periodStart.periodId }} ({{ periodStart.isCheckout  }})</span> -->
         <span style="font-size: 13px;">共{{ tableData.length }}条记录</span>
       </v-col>
 
@@ -137,7 +132,12 @@ new Vue({
       return window.innerWidth < 600;
     },
     tableData() {
-      return this.tableDataFromBackend;
+      if (!this.selectSubjectCategory) {
+        return this.tableDataFromBackend;
+      }
+      if (this.selectSubjectCategory) {
+        return this.tableDataFromBackend.filter(row => row.subjectCategory === this.selectSubjectCategory);
+      }
     }
   },
   watch: {},
@@ -179,13 +179,13 @@ new Vue({
         }
       });
       const { rows } = result.data.appData.resultData;
-      if (rows.length === 1) {
-        this.periodStart = rows[0];
-      }
       if (rows.length === 0) {
         this.isTableLoading = false;
         window.vtoast.fail({ message: "请创建第一个会计期间!" });
         throw new Error("[selectPeriodStart] false; 请创建第一个会计期间");
+      }
+      if (rows.length === 1) {
+        this.periodStart = rows[0];
       }
       if (rows.length > 1) {
         this.isTableLoading = false;
@@ -204,43 +204,58 @@ new Vue({
         periodId: this.periodStart.periodId,
         isPeriodStart: '是',
       };
-      if (subjectCategory) {
-        where.subjectCategory = this.selectSubjectCategory;
-      }
       const result = await window.jianghuAxios({
         data: {
           appData: {
             pageId: 'subjectBalancePeriodStartManagement',
             actionId: 'selectSubjectBalanceList',
             actionData: {},
-            where,
+            where: { 
+              periodId: this.periodStart.periodId,
+              isPeriodStart: '是',
+            },
             orderBy: [{column: 'subjectId', order: 'asc'}]
           }
         }
       });
       const { rows } = result.data.appData.resultData;
-
       this.tableDataFromBackend = rows;
       this.isTableLoading = false;
     },
     // =================================uiAction 公共方法 end ======================================
     async updateSubjectBalanceForPeriodStart({}) { 
       await window.vtoast.loading("保存");
+      const subjectBalanceList = this.tableDataFromBackend.map(item => {
+        return {
+          id: item.id,
+          periodId: item.periodId,
+          isPeriodStart: item.isPeriodStart,
+          periodStartBalance: item.periodStartBalance,
+        }
+      })
       await window.jianghuAxios({
         data: {
           appData: {
             pageId: 'subjectBalancePeriodStartManagement',
             actionId: 'updateSubjectBalanceForPeriodStart',
             actionData: {
-              subjectBalanceList: this.tableDataFromBackend,
+              subjectBalanceList,
             },
           }
         }
       });
       await window.vtoast.success("保存成功");
     },
-  async checkSubjectBalanceFirst({}) {
+    async checkSubjectBalanceFirst({}) {
       // TODO: ConfirmDailog 展示 平衡数据数据
+      const debitList = this.tableDataFromBackend.filter(row => row.subjectBalanceDirection === '借');
+      const creditList = this.tableDataFromBackend.filter(row => row.subjectBalanceDirection === '贷');
+      const debitSum = _.sumBy(debitList, 'periodStartBalance');
+      const creditSum = _.sumBy(creditList, 'periodStartBalance');
+      if (debitSum !== creditSum) {
+        await window.vtoast.fail("您录入的期初余额不平衡，请仔细核对!");
+      }
+      window.confirmDialog({title: "试算平衡", content: `借方金额: ${debitSum}  贷方金额: ${creditSum}  差额: ${debitSum-creditSum}`})
     },
   }
 })
